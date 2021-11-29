@@ -35,45 +35,23 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var database_1 = require("./database");
-var dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
-var express_1 = __importDefault(require("express"));
-var app = (0, express_1.default)();
-app.use(express_1.default.urlencoded({ extended: true }));
-app.use(express_1.default.json());
-// ---- --- --- ------ --- --- ----- --- --- ---
-// https://www.codingdeft.com/posts/nodejs-react-cors-error/ god bless
-var domainsFromEnv = process.env.CORS_DOMAINS || " ";
-var whitelist = domainsFromEnv.split(",").map(function (item) { return item.trim(); });
-var cors_1 = __importDefault(require("cors"));
-var corsOptions = {
-    origin: function (origin, callback) {
-        if (!origin || whitelist.indexOf(origin) !== -1) {
-            callback(null, true);
-        }
-        else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
-    credentials: true,
-};
-app.use((0, cors_1.default)(corsOptions));
-var spotify_1 = __importDefault(require("./spotify"));
-app.use("/", spotify_1.default);
-app.listen(process.env.PORT || 8000, function () { return __awaiter(void 0, void 0, void 0, function () {
+var axios = require('axios');
+var root = document.getElementById('root');
+if (root != null) {
+    root.innerHTML = 'arstneioarstneio';
+}
+// request()
+var arst = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var data;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
-                console.log("server listening on http://localhost:8000/");
-                return [4 /*yield*/, (0, database_1.connectDB)()];
+            case 0: return [4 /*yield*/, axios.get('http://localhost/3000/spotify/getme/')];
             case 1:
-                _a.sent();
+                data = _a.sent();
+                console.log(data);
                 return [2 /*return*/];
         }
     });
-}); });
+}); };
+arst();

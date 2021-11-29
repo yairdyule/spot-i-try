@@ -39,41 +39,61 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var database_1 = require("./database");
+exports.connectDB = exports.User = void 0;
+var mongoose_1 = __importDefault(require("mongoose"));
 var dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-var express_1 = __importDefault(require("express"));
-var app = (0, express_1.default)();
-app.use(express_1.default.urlencoded({ extended: true }));
-app.use(express_1.default.json());
-// ---- --- --- ------ --- --- ----- --- --- ---
-// https://www.codingdeft.com/posts/nodejs-react-cors-error/ god bless
-var domainsFromEnv = process.env.CORS_DOMAINS || " ";
-var whitelist = domainsFromEnv.split(",").map(function (item) { return item.trim(); });
-var cors_1 = __importDefault(require("cors"));
-var corsOptions = {
-    origin: function (origin, callback) {
-        if (!origin || whitelist.indexOf(origin) !== -1) {
-            callback(null, true);
-        }
-        else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
-    credentials: true,
-};
-app.use((0, cors_1.default)(corsOptions));
-var spotify_1 = __importDefault(require("./spotify"));
-app.use("/", spotify_1.default);
-app.listen(process.env.PORT || 8000, function () { return __awaiter(void 0, void 0, void 0, function () {
+var userSchema = new mongoose_1.default.Schema({
+    name: 'string',
+    uri: 'string',
+    id: 'string',
+    friends: [{
+            type: mongoose_1.default.Schema.Types.ObjectId,
+            ref: 'User'
+        }],
+    pw: 'string',
+    email: 'string',
+    queues: [{
+            to: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User' },
+            from: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User' },
+            title: 'string',
+            hasBeenExported: 'bool',
+            tracks: [{
+                    name: 'string',
+                    artist: [{ name: 'string', uri: 'string', id: 'string' }],
+                    uri: 'string',
+                    id: 'string'
+                }],
+        }]
+});
+exports.User = mongoose_1.default.model('User', userSchema);
+module.exports = exports.User;
+// export const Connect = async () => {
+//   try {
+//     Mongoose.connect(process.env.MONGO_URI as string)
+//     console.log(`connected to db`)
+//   } catch (err) {
+//     console.error(err)
+//   }
+// }
+var connectDB = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                console.log("server listening on http://localhost:8000/");
-                return [4 /*yield*/, (0, database_1.connectDB)()];
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, mongoose_1.default.connect(process.env.MONGO_URI)];
             case 1:
                 _a.sent();
-                return [2 /*return*/];
+                console.log('MongoDB connected');
+                return [3 /*break*/, 3];
+            case 2:
+                err_1 = _a.sent();
+                console.error(err_1.message);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
-}); });
+}); };
+exports.connectDB = connectDB;
+module.exports = { connectDB: exports.connectDB, User: exports.User };

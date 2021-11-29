@@ -1,16 +1,38 @@
-import express from 'express'
-import spotify from './spotify'
-import dotenv from 'dotenv'
-dotenv.config()
+import { connectDB } from "./database";
 
-const app = express()
+import dotenv from "dotenv";
+dotenv.config();
 
-app.use('/', spotify)
+import express from "express";
+const app = express();
 
-// app.get('/', (_, res) => {
-//   res.send('helloooo world ;D')
-// })
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+// ---- --- --- ------ --- --- ----- --- --- ---
 
-app.listen(process.env.PORT || 3000, () => {
-  console.log(`express listening on http://localhost:3000/`)
-})
+// https://www.codingdeft.com/posts/nodejs-react-cors-error/ god bless
+const domainsFromEnv = process.env.CORS_DOMAINS || " ";
+
+const whitelist = domainsFromEnv.split(",").map((item) => item.trim());
+
+import cors from "cors";
+const corsOptions = {
+  origin: function (origin: any, callback: any) {
+    if (!origin || whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
+import spotify from "./spotify";
+app.use("/", spotify);
+
+app.listen(process.env.PORT || 8000, async () => {
+  console.log(`server listening on http://localhost:8000/`);
+  await connectDB();
+});
