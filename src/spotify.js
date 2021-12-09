@@ -62,7 +62,7 @@ var scopes = [
     "playlist-modify-private",
 ];
 //send to authorization page
-route.post("/", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+route.post("/login", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, pw, email, user, err_1;
     return __generator(this, function (_b) {
         switch (_b.label) {
@@ -78,13 +78,13 @@ route.post("/", function (req, res) { return __awaiter(void 0, void 0, void 0, f
             case 2:
                 _b.sent();
                 console.log("user created");
+                res.send("user created");
                 return [3 /*break*/, 4];
             case 3:
                 console.log("user found");
+                res.send({ valid: true });
                 _b.label = 4;
-            case 4:
-                res.send({ user: true });
-                return [3 /*break*/, 6];
+            case 4: return [3 /*break*/, 6];
             case 5:
                 err_1 = _b.sent();
                 console.error(err_1);
@@ -238,7 +238,8 @@ route.get("/getSongs", function (req, res) { return __awaiter(void 0, void 0, vo
 //   playlists: [{
 //    name,
 //    id,
-//    uri
+//    uri,
+//    img
 //   }]
 // }
 route.get("/getPlaylists", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
@@ -248,12 +249,13 @@ route.get("/getPlaylists", function (req, res) { return __awaiter(void 0, void 0
             case 0: return [4 /*yield*/, spotifyApi.getUserPlaylists({ limit: 5 })];
             case 1:
                 playlists = _a.sent();
-                playlists.body.items.map(function (p) { return p.name; });
                 response = playlists.body.items.map(function (plist) {
+                    console.log(plist);
                     return {
                         name: plist.name,
                         id: plist.id,
                         uri: plist.uri,
+                        img: plist.images.length > 0 ? plist.images[0].url : null,
                     };
                 });
                 res.send({ playlists: response });
@@ -294,7 +296,13 @@ route.get("/db/queues/", function (req, res) { return __awaiter(void 0, void 0, 
                 return [4 /*yield*/, database_1.User.findOne({ email: email, pw: pw })];
             case 1:
                 user = _b.sent();
-                res.send(user.queues);
+                if (user) {
+                    console.log(user.queues);
+                    res.send(user.queues);
+                }
+                else {
+                    return [2 /*return*/, console.error("couldn't find user")];
+                }
                 return [3 /*break*/, 3];
             case 2:
                 err_5 = _b.sent();
@@ -302,6 +310,60 @@ route.get("/db/queues/", function (req, res) { return __awaiter(void 0, void 0, 
                 console.log(err_5);
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
+        }
+    });
+}); });
+route.get("db/friends", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var name_3, user, err_6;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                name_3 = req.query.name;
+                return [4 /*yield*/, database_1.User.findOne({ name: name_3 })];
+            case 1:
+                user = _a.sent();
+                console.log(user.friends);
+                res.send(user.friends);
+                return [3 /*break*/, 3];
+            case 2:
+                err_6 = _a.sent();
+                console.error(err_6);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
+route.get("db/friendRequest", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, from, to, fromUser, toUser, err_7;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _b.trys.push([0, 7, , 8]);
+                _a = req.query, from = _a.from, to = _a.to;
+                return [4 /*yield*/, database_1.User.findOne({ name: from })];
+            case 1:
+                fromUser = _b.sent();
+                return [4 /*yield*/, database_1.User.findOne({ name: to })];
+            case 2:
+                toUser = _b.sent();
+                if (!!toUser) return [3 /*break*/, 3];
+                res.send("user " + to + " not found");
+                return [3 /*break*/, 6];
+            case 3:
+                if (!!fromUser) return [3 /*break*/, 4];
+                res.send("this is awkward but... we don't know you");
+                return [3 /*break*/, 6];
+            case 4: return [4 /*yield*/, database_1.User.findOneAndUpdate({ name: from })];
+            case 5:
+                _b.sent();
+                _b.label = 6;
+            case 6: return [3 /*break*/, 8];
+            case 7:
+                err_7 = _b.sent();
+                console.error(err_7);
+                return [3 /*break*/, 8];
+            case 8: return [2 /*return*/];
         }
     });
 }); });
@@ -327,22 +389,29 @@ route.get("/addToQueue", function (req, res) { return __awaiter(void 0, void 0, 
 }); });
 // get the user's currently playing track
 route.get("/getCurrentSong", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var song, response, err_6;
-    var _a;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+    var data, trackInfo, err_8;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
             case 0:
-                _b.trys.push([0, 2, , 3]);
+                _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, spotifyApi.getMyCurrentPlayingTrack()];
             case 1:
-                song = _b.sent();
-                response = (_a = song.body.item) === null || _a === void 0 ? void 0 : _a.name;
-                res.send(response);
+                data = _a.sent();
+                console.log(data.body.item);
+                trackInfo = null;
+                if (data.body.item != null) {
+                    trackInfo = {
+                        name: data.body.item.name,
+                        uri: data.body.item.uri,
+                        id: data.body.item.id,
+                    };
+                }
+                res.send(trackInfo);
                 return [3 /*break*/, 3];
             case 2:
-                err_6 = _b.sent();
+                err_8 = _a.sent();
                 console.log("unable to retrieve the user's currently playing track:");
-                console.error(err_6);
+                console.error(err_8);
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
@@ -381,6 +450,7 @@ route.get("/searchSong", function (req, res) { return __awaiter(void 0, void 0, 
                     return {
                         name: song.name,
                         id: song.id,
+                        img: song.album.images[0].url,
                         uri: song.uri,
                         artists: artists,
                     };

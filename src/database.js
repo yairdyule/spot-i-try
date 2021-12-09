@@ -44,29 +44,35 @@ var mongoose_1 = __importDefault(require("mongoose"));
 var dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 var userSchema = new mongoose_1.default.Schema({
-    name: 'string',
-    uri: 'string',
-    id: 'string',
-    friends: [{
+    name: "string",
+    uri: "string",
+    id: "string",
+    friends: [
+        {
             type: mongoose_1.default.Schema.Types.ObjectId,
-            ref: 'User'
-        }],
-    pw: 'string',
-    email: 'string',
-    queues: [{
-            to: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User' },
-            from: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User' },
-            title: 'string',
-            hasBeenExported: 'bool',
-            tracks: [{
-                    name: 'string',
-                    artist: [{ name: 'string', uri: 'string', id: 'string' }],
-                    uri: 'string',
-                    id: 'string'
-                }],
-        }]
+            ref: "User",
+        },
+    ],
+    pw: "string",
+    email: "string",
+    queues: [
+        {
+            to: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" },
+            from: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" },
+            title: "string",
+            hasBeenExported: "bool",
+            tracks: [
+                {
+                    name: "string",
+                    artist: [{ name: "string", uri: "string", id: "string" }],
+                    uri: "string",
+                    id: "string",
+                },
+            ],
+        },
+    ],
 });
-exports.User = mongoose_1.default.model('User', userSchema);
+exports.User = mongoose_1.default.model("User", userSchema);
 module.exports = exports.User;
 // export const Connect = async () => {
 //   try {
@@ -85,7 +91,7 @@ var connectDB = function () { return __awaiter(void 0, void 0, void 0, function 
                 return [4 /*yield*/, mongoose_1.default.connect(process.env.MONGO_URI)];
             case 1:
                 _a.sent();
-                console.log('MongoDB connected');
+                console.log("MongoDB connected");
                 return [3 /*break*/, 3];
             case 2:
                 err_1 = _a.sent();

@@ -1,304 +1,223 @@
-import "./App.css";
+import { Route, Routes, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+// import { useQuery } from "./hooks/useQuery";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import "./App.css";
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(false); //display full page if user logged in
-  const [email, setEmail] = useState(""); // email, pw, query form control
-  const [pw, setPw] = useState("");
-  const [query, setQuery] = useState("");
-  const [queues, setQueues] = useState([]); // store user's queues once fetched
-  const [state, setState] = useState({}); // badly named - stores user info from /getMe
-  const [artists, setArtists] = useState([]); //store user's top artists
-  const [songs, setSongs] = useState([]); //store their top songs
-  const [playlists, setPlists] = useState([]); //store their playlists
-  const [currentSong, setCurrentSong] = useState(""); //"" currently playing song
-  const [clipboard, setClipboard] = useState({ hasCopied: false, uri: "" }); //store uri of 'copied' song
+  return (
+    <div className="App">
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/a" element={<A />} />
+        <Route path="/b" element={<B />} />
+        <Route path="me/getMe" element={<GetMe />} />
+        <Route path="me/playlists" element={<Playlists />} />
+        <Route path="me/queues" element={<Queues />} />
+      </Routes>
+    </div>
+  );
+}
+
+function Nav() {
+  return (
+    <nav>
+      <ul className="flex flex-col">
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        <li>
+          <Link to="/a">a</Link>
+        </li>
+        <li>
+          <Link to="/b">b</Link>
+        </li>
+        <li>
+          <Link to="/me/getMe">my details</Link>
+        </li>
+        <li>
+          <Link to="/me/playlists">my playlists</Link>
+        </li>
+        <li>
+          <Link to="/me/queues">my queues</Link>
+        </li>
+      </ul>
+      <Search className="flex flex-col" />
+    </nav>
+  );
+}
+
+function Search() {
+  const [input, setInput] = useState("");
+  const [songs, setSongs] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+
+  const handleChange = async (e) => {
+    e.preventDefault();
+    if (input !== "") {
+      let results = await axios.get("http://localhost:8000/searchSong", {
+        params: { query: input },
+      });
+      console.log(results.data);
+      setSongs(results.data);
+      setLoaded(true);
+    }
+  };
+
+  return (
+    <div className="search">
+      <form onSubmit={(e) => handleChange(e)}>
+        <input
+          type="text"
+          placeholder="please search a song"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+        />
+        <button type="submit"> submit me! </button>{" "}
+        <button
+          type="button"
+          onClick={() => {
+            setSongs([]);
+          }}
+        >
+          clear!
+        </button>{" "}
+        {/* should i instead link to a search page? probably*/}
+      </form>
+
+      <ul>
+        {loaded &&
+          songs.map((song) => {
+            return (
+              <li className="song flex flex-row" key={song.id}>
+                {song.img && (
+                  <img
+                    src={song.img}
+                    style={{ width: "50px", height: "auto" }}
+                  />
+                )}
+                <div>
+                  <name>{song.name}</name>
+                  <p>by {song.artists.join(",")} </p>
+                </div>
+              </li>
+            );
+          })}
+      </ul>
+    </div>
+  );
+}
+
+function Page({ children }) {
+  return (
+    <div className="page">
+      <Nav />
+      {children}
+    </div>
+  );
+}
+
+function GetMe() {
+  const [state, setState] = useState({});
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (loggedIn) {
-      async function fetchPlaylists() {
-        try {
-          const response = await axios.get(
-            "http://localhost:8000/getPlaylists"
-          );
-          setPlists(response.data.playlists);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-      fetchPlaylists();
+    const getMyData = async () => {
+      let data = await axios.get("http://localhost:8000/getMe");
+      setState(data.data.me);
+      setLoaded(true);
+    };
+    getMyData();
+  }, []);
 
-      async function fetchMe() {
-        try {
-          const response = await axios.get("http://localhost:8000/getMe");
-          //update user's account on fetch
-          //kinda hacky - certainly a better way todo
-          await axios.post("http://localhost:8000/db/updateUser", {
-            pw: pw,
-            email: email,
-            id: response.data.me.id,
-            name: response.data.me.name,
-          });
-          setState(response.data.me);
-        } catch (err) {
-          console.error(err);
-          setState({});
-        }
-      }
-      fetchMe();
+  let children = (
+    <div>
+      <h1>your info</h1>
+      {loaded && (
+        <>
+          <h1>{state.name}</h1>
+          <img src={state.images[0].url} />
+        </>
+      )}
+    </div>
+  );
+  return <Page children={children} />;
+}
 
-      async function fetchArtists() {
-        try {
-          const response = await axios.get("http://localhost:8000/getArtists");
-          setArtists(response.data.artists);
-        } catch (err) {
-          console.error(err);
-          setArtists([]);
-        }
-      }
-      fetchArtists();
+function Playlists() {
+  const [playlists, setPlaylists] = useState([]);
+  const [loaded, setLoaded] = useState(false);
 
-      async function fetchSongs() {
-        try {
-          const response = await axios.get("http://localhost:8000/getSongs");
-          setSongs(response.data.songs);
-        } catch (err) {
-          console.error(err);
-        }
-      }
-      fetchSongs();
+  useEffect(() => {
+    const getPlaylists = async () => {
+      let data = await axios.get("http://localhost:8000/getPlaylists");
+      console.log(data);
+      setPlaylists(data.data.playlists);
+      setLoaded(true);
+    };
+    getPlaylists();
+  }, []);
 
-      async function getCurrentSong() {
-        try {
-          const response = await axios.get(
-            "http://localhost:8000/getCurrentSong"
-          );
-          setCurrentSong(response.data);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-      getCurrentSong();
-    }
-  }, [loggedIn]);
-
-  async function queueSong(uri) {
-    await axios.get("http://localhost:8000/addToQueue", {
-      params: { uri },
-    });
-  }
-
-  async function copyUri(uri) {
-    setClipboard({ hasCopied: true, uri: uri });
-  }
-
-  async function addSongToPlaylist(songUri, playlistId) {
-    await axios.get("http://localhost:8000/addSongToPlaylist", {
-      params: { songUri, playlistId },
-    });
-  }
-
-  async function listQueues(pw, email, name, id) {
-    let data = await axios.get("http://localhost:8000/db/queues", {
-      params: { pw, email, name, id },
-    });
-    setQueues(data.data);
-  }
-
-  const setPassword = (txt) => {
-    setPw(txt);
-  };
-
-  const [isGoodForm, setIsGoodForm] = useState(true);
-  const handleSubmit = async (e, pw, email) => {
-    e.preventDefault();
-    if (isGoodForm) {
-      let data = await axios.post("http://localhost:8000/", { pw, email });
-      if (data.data.user) {
-        setLoggedIn(true);
-      }
-      setIsGoodForm(true);
-    } else {
-      setIsGoodForm(false);
-    }
-  };
-
-  async function exportQueue(queue, pw, email) {
-    let ids = queue.tracks.map((track) => track.id);
-    await axios.post("http://localhost:8000/exportQueue", {
-      title: queue.title,
-      ids: ids,
-      pw: pw,
-      email: email,
-    });
-  }
-
-  async function searchSong(query) {
-    let data = await axios.get("http://localhost:8000/searchSong", {
-      params: { query: query },
-    });
-    return data.data;
-  }
-
-  const [searchResults, setSearchResults] = useState([]);
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    let data = await searchSong(query);
-    setSearchResults(data);
-    setQuery("");
-  };
-  function NotLoggedIn() {
-    return (
-      <div className="App">
-        <h1>Please log in!</h1>
-        <form onSubmit={(e) => handleSubmit(e, pw, email)}>
-          <label>
-            {" "}
-            email:
-            <input
-              type="text"
-              name="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-            />
-          </label>
-          <label>
-            {" "}
-            pw:
-            <input
-              type="password"
-              name="pw"
-              value={pw}
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-            />
-          </label>
-          <input type="submit" value="submit"></input>
-        </form>
-      </div>
-    );
-  }
-
-  function IsLoggedIn() {
-    return (
-      <div className="App">
-        <h1>
-          We hope you're enjoying {currentSong}, {state.name}.
-        </h1>
-
-        {
-          //artists
-        }
-        <h2>Top Artists</h2>
+  let children = (
+    <div>
+      <h1>Your playlists</h1>
+      {loaded && (
         <ul>
-          {artists.map((artist, index) => {
-            return <li key={index}>{artist}</li>;
-          })}
-        </ul>
-
-        <h2>Top Songs</h2>
-        <ul>
-          {songs.map((song, ind) => {
+          {playlists.map((p) => {
             return (
-              <li key={ind}>
-                {song.name} - {song.artists.join()}
-                <button onClick={() => queueSong(song.uri)}>
-                  Add to queue
-                </button>
-                <button onClick={() => copyUri(song.uri)}>Copy song</button>
-              </li>
-            );
-          })}
-        </ul>
-
-        <h2>Playlists</h2>
-        <ul>
-          {playlists.map((playlist, ind) => {
-            return (
-              <li key={ind}>
-                {playlist.name}
-                {clipboard.hasCopied && (
-                  <button
-                    onClick={() => {
-                      addSongToPlaylist(clipboard.uri, playlist.id);
-                    }}
-                  >
-                    Add song to playlist
-                  </button>
+              <li key={p.uri}>
+                {p.img !== null && (
+                  <img src={p.img} style={{ width: "100px", height: "auto" }} />
                 )}
+                {p.name}
               </li>
             );
           })}
         </ul>
-        <div>
-          <h4>search a song</h4>
-          <form onSubmit={(e) => handleSearch(e)}>
-            <label>
-              {" "}
-              query:
-              <input
-                type="text"
-                name="email"
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                }}
-              />
-            </label>
-            <input type="submit" value="submit"></input>
-          </form>
-          <ul>
-            {searchResults.map((song, index) => {
-              return (
-                <li key={index}>
-                  {song.name} - {song.artists.join()} (uri: {song.uri})
-                  <button onClick={() => queueSong(song.uri)}>
-                    Add to queue
-                  </button>
-                  <button onClick={() => copyUri(song.uri)}>Copy song</button>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+      )}
+    </div>
+  );
 
-        <div>
-          <button
-            onClick={() => {
-              listQueues(pw, email, state.name, state.id);
-            }}
-          >
-            List your queues!
-          </button>
-          {queues.map((queue) => {
-            return (
-              <div>
-                <h3>incoming queue: {queue.title}</h3>
-                <ul>
-                  {queue.tracks.map((track, ind) => {
-                    return (
-                      <li key={ind}>
-                        {track.name} -{" "}
-                        {track.artists.map((artist) => artist.name).join()}{" "}
-                      </li>
-                    );
-                  })}
-                </ul>
-                <button onClick={() => exportQueue(queue, pw, email)}>
-                  Export
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
+  return <Page children={children} />;
+}
+
+function Queues() {
+  const [queues, setQueues] = useState([]);
+
+  useEffect(() => {
+    async function fetchQueues() {
+      let data = await axios.get("http://localhost:8000/db/queues");
+      console.log(data);
+    }
+
+    fetchQueues();
+  }, []);
+
+  return <Page children={<h1>your queues</h1>} />;
+}
+
+function Home() {
+  return <Page children={<h1>Homepage</h1>} />;
+}
+
+function A() {
+  const [state, setState] = useState("");
+  async function getHi() {
+    let data = await axios.get("http://localhost:8000/getHi");
+    setState(data.data);
   }
-  return <>{loggedIn ? <IsLoggedIn /> : <NotLoggedIn />}</>;
+  let Button = <button onClick={getHi}>get hi</button>;
+  let Children = (
+    <div>
+      <h1>{state}</h1>
+      {Button}
+    </div>
+  );
+  return <Page children={Children} />;
+}
+
+function B() {
+  return <Page children={<h1>B!</h1>} />;
 }
 
 export default App;

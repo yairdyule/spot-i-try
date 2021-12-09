@@ -29,7 +29,7 @@ const scopes = [
 ];
 
 //send to authorization page
-route.post("/", async (req, res) => {
+route.post("/login", async (req, res) => {
   try {
     const { pw, email } = req.body;
     let user = await User.findOne({ email: email, pw: pw });
@@ -40,10 +40,11 @@ route.post("/", async (req, res) => {
       user = new User({ email, pw });
       await user.save();
       console.log("user created");
+      res.send("user created");
     } else {
       console.log("user found");
+      res.send({ valid: true });
     }
-    res.send({ user: true });
   } catch (err) {
     console.error(err);
   }
@@ -146,19 +147,23 @@ route.get("/getSongs", async (req, res) => {
 //   playlists: [{
 //    name,
 //    id,
-//    uri
+//    uri,
+//    img
 //   }]
 // }
 route.get("/getPlaylists", async (req, res) => {
   let playlists = await spotifyApi.getUserPlaylists({ limit: 5 });
-  playlists.body.items.map((p) => p.name);
+  // console.log(playlists.body.items[0].images[0]);
   let response = playlists.body.items.map((plist) => {
+    console.log(plist);
     return {
       name: plist.name,
       id: plist.id,
       uri: plist.uri,
+      img: plist.images.length > 0 ? plist.images[0].url : null,
     };
   });
+
   res.send({ playlists: response });
 });
 
@@ -183,10 +188,43 @@ route.get("/db/queues/", async (req, res) => {
   try {
     let { pw, email, id, name } = req.query;
     let user = await User.findOne({ email: email, pw: pw });
-    res.send(user.queues);
+    if (user) {
+      console.log(user.queues);
+      res.send(user.queues);
+    } else {
+      return console.error("couldn't find user");
+    }
   } catch (err) {
     console.log("couldn't make it to uqeues");
     console.log(err);
+  }
+});
+
+route.get("db/friends", async (req, res) => {
+  try {
+    let { name } = req.query;
+    let user = await User.findOne({ name });
+    console.log(user.friends);
+    res.send(user.friends);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+route.get("db/friendRequest", async (req, res) => {
+  try {
+    let { from, to } = req.query;
+    let fromUser = await User.findOne({ name: from });
+    let toUser = await User.findOne({ name: to });
+    if (!toUser) {
+      res.send("user " + to + " not found");
+    } else if (!fromUser) {
+      res.send("this is awkward but... we don't know you");
+    } else {
+      await User.findOneAndUpdate({ name: from });
+    }
+  } catch (err) {
+    console.error(err);
   }
 });
 
@@ -205,9 +243,18 @@ route.get("/addToQueue", async (req, res) => {
 // get the user's currently playing track
 route.get("/getCurrentSong", async (req, res) => {
   try {
-    let song = await spotifyApi.getMyCurrentPlayingTrack();
-    let response = song.body.item?.name;
-    res.send(response);
+    let data = await spotifyApi.getMyCurrentPlayingTrack();
+    console.log(data.body.item);
+    let trackInfo = null;
+    if (data.body.item != null) {
+      trackInfo = {
+        name: data.body.item.name,
+        uri: data.body.item.uri,
+        id: data.body.item.id,
+      };
+    }
+
+    res.send(trackInfo);
   } catch (err) {
     console.log("unable to retrieve the user's currently playing track:");
     console.error(err);
@@ -235,6 +282,7 @@ route.get("/searchSong", async (req, res) => {
     return {
       name: song.name,
       id: song.id,
+      img: song.album.images[0].url,
       uri: song.uri,
       artists: artists,
     };
