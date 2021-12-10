@@ -35,46 +35,35 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var dotenv = require("dotenv");
-var express = require("express");
-var cors = require("cors");
-// import { connectDB } from "./database";
-var db = require("../db/index.js");
-dotenv.config();
-var app = express();
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-// https://www.codingdeft.com/posts/nodejs-react-cors-error/ god bless
-var domainsFromEnv = process.env.CORS_DOMAINS || " ";
-var whitelist = domainsFromEnv.split(",").map(function (item) { return item.trim(); });
-var corsOptions = {
-    origin: function (origin, callback) {
-        if (!origin || whitelist.indexOf(origin) !== -1) {
-            callback(null, true);
-        }
-        else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
-    credentials: true,
-};
-app.use(cors(corsOptions));
-// import spotify from "./spotify";
-// app.use("/", spotify);
-app.get("/getHi", function (req, res) {
-    res.send("hi from the server");
-});
-app.listen(process.env.PORT || 8000, function () { return __awaiter(void 0, void 0, void 0, function () {
-    var data;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                console.log("server listening on http://localhost:8000/");
-                return [4 /*yield*/, db.query("select * from users;")];
-            case 1:
-                data = _a.sent();
-                console.log(data);
-                return [2 /*return*/];
-        }
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.addUser = void 0;
+var index_1 = require("./index");
+//should this be void? or return info about the added user
+function addUser(name) {
+    return __awaiter(this, void 0, void 0, function () {
+        var rows, err_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, (0, index_1.query)(" select * from users where name = $1;", [
+                            name,
+                        ])];
+                case 1:
+                    rows = (_a.sent()).rows;
+                    if (rows.length > 0) {
+                        console.log(rows[0]);
+                        console.log("user already exists - try logging in.");
+                        return [2 /*return*/, rows[0]];
+                    }
+                    return [3 /*break*/, 3];
+                case 2:
+                    err_1 = _a.sent();
+                    console.error(err_1);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
     });
-}); });
+}
+exports.addUser = addUser;

@@ -1,7 +1,8 @@
-import dotenv from "dotenv";
-import express from "express";
-import cors from "cors";
-import { connectDB } from "./database";
+const dotenv = require("dotenv");
+const express = require("express");
+const cors = require("cors");
+// import { connectDB } from "./database";
+const db = require("../db/index.js");
 
 dotenv.config();
 
@@ -27,8 +28,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-import spotify from "./spotify";
-app.use("/", spotify);
+// import spotify from "./spotify";
+// app.use("/", spotify);
 
 app.get("/getHi", (req, res) => {
   res.send("hi from the server");
@@ -36,5 +37,7 @@ app.get("/getHi", (req, res) => {
 
 app.listen(process.env.PORT || 8000, async () => {
   console.log(`server listening on http://localhost:8000/`);
-  await connectDB();
+  let data = await db.query("select * from users;");
+  console.log(data);
+  // await connectDB();
 });

@@ -43,13 +43,13 @@ var spotify_web_api_node_1 = __importDefault(require("spotify-web-api-node"));
 var config_1 = require("./config");
 var cors_1 = __importDefault(require("cors"));
 var express_1 = require("express");
-var database_1 = require("./database");
+// import { User } from "./database";
 var route = (0, express_1.Router)();
 route.use((0, cors_1.default)());
 var spotifyApi = new spotify_web_api_node_1.default({
-    clientId: config_1.CLIENT_ID,
-    clientSecret: config_1.CLIENT_SECRET,
-    redirectUri: config_1.REDIRECT_URI,
+    clientId: config_1.config.SPOTIFY_CLIENT_ID,
+    clientSecret: config_1.config.SPOTIFY_CLIENT_SECRET,
+    redirectUri: config_1.config.SPOTIFY_REDIRECT_URI,
 });
 var scopes = [
     "user-read-private",
@@ -63,33 +63,30 @@ var scopes = [
 ];
 //send to authorization page
 route.post("/login", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, pw, email, user, err_1;
+    var _a, pw, email, err_1;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                _b.trys.push([0, 5, , 6]);
+                _b.trys.push([0, 4, , 5]);
                 _a = req.body, pw = _a.pw, email = _a.email;
-                return [4 /*yield*/, database_1.User.findOne({ email: email, pw: pw })];
-            case 1:
-                user = _b.sent();
-                if (!!user) return [3 /*break*/, 3];
-                user = new database_1.User({ email: email, pw: pw });
+                if (!!user) return [3 /*break*/, 2];
+                user = new User({ email: email, pw: pw });
                 return [4 /*yield*/, user.save()];
-            case 2:
+            case 1:
                 _b.sent();
                 console.log("user created");
                 res.send("user created");
-                return [3 /*break*/, 4];
-            case 3:
+                return [3 /*break*/, 3];
+            case 2:
                 console.log("user found");
                 res.send({ valid: true });
-                _b.label = 4;
-            case 4: return [3 /*break*/, 6];
-            case 5:
+                _b.label = 3;
+            case 3: return [3 /*break*/, 5];
+            case 4:
                 err_1 = _b.sent();
                 console.error(err_1);
-                return [3 /*break*/, 6];
-            case 6: return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
         }
     });
 }); });
@@ -99,7 +96,7 @@ route.get("/", function (req, res) { return __awaiter(void 0, void 0, void 0, fu
     var data;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, database_1.User.find({})];
+            case 0: return [4 /*yield*/, User.find({})];
             case 1:
                 data = _a.sent();
                 console.log(data);
@@ -272,7 +269,7 @@ route.post("/db/updateUser", function (req, res) { return __awaiter(void 0, void
             case 0:
                 _b.trys.push([0, 2, , 3]);
                 _a = req.body, pw = _a.pw, email = _a.email, id = _a.id, name_1 = _a.name;
-                return [4 /*yield*/, database_1.User.findOneAndUpdate({ pw: pw, email: email }, { id: id, name: name_1 }, { new: true })];
+                return [4 /*yield*/, User.findOneAndUpdate({ pw: pw, email: email }, { id: id, name: name_1 }, { new: true })];
             case 1:
                 _b.sent();
                 res.send("thanks, updated");
@@ -293,7 +290,7 @@ route.get("/db/queues/", function (req, res) { return __awaiter(void 0, void 0, 
             case 0:
                 _b.trys.push([0, 2, , 3]);
                 _a = req.query, pw = _a.pw, email = _a.email, id = _a.id, name_2 = _a.name;
-                return [4 /*yield*/, database_1.User.findOne({ email: email, pw: pw })];
+                return [4 /*yield*/, User.findOne({ email: email, pw: pw })];
             case 1:
                 user = _b.sent();
                 if (user) {
@@ -320,7 +317,7 @@ route.get("db/friends", function (req, res) { return __awaiter(void 0, void 0, v
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 name_3 = req.query.name;
-                return [4 /*yield*/, database_1.User.findOne({ name: name_3 })];
+                return [4 /*yield*/, User.findOne({ name: name_3 })];
             case 1:
                 user = _a.sent();
                 console.log(user.friends);
@@ -341,10 +338,10 @@ route.get("db/friendRequest", function (req, res) { return __awaiter(void 0, voi
             case 0:
                 _b.trys.push([0, 7, , 8]);
                 _a = req.query, from = _a.from, to = _a.to;
-                return [4 /*yield*/, database_1.User.findOne({ name: from })];
+                return [4 /*yield*/, User.findOne({ name: from })];
             case 1:
                 fromUser = _b.sent();
-                return [4 /*yield*/, database_1.User.findOne({ name: to })];
+                return [4 /*yield*/, User.findOne({ name: to })];
             case 2:
                 toUser = _b.sent();
                 if (!!toUser) return [3 /*break*/, 3];
@@ -354,7 +351,7 @@ route.get("db/friendRequest", function (req, res) { return __awaiter(void 0, voi
                 if (!!fromUser) return [3 /*break*/, 4];
                 res.send("this is awkward but... we don't know you");
                 return [3 /*break*/, 6];
-            case 4: return [4 /*yield*/, database_1.User.findOneAndUpdate({ name: from })];
+            case 4: return [4 /*yield*/, User.findOneAndUpdate({ name: from })];
             case 5:
                 _b.sent();
                 _b.label = 6;
@@ -471,7 +468,7 @@ route.post("/exportQueue", function (req, res) { return __awaiter(void 0, void 0
         switch (_b.label) {
             case 0:
                 _a = req.body, pw = _a.pw, email = _a.email, title = _a.title;
-                return [4 /*yield*/, database_1.User.findOne({ email: email, pw: pw })];
+                return [4 /*yield*/, User.findOne({ email: email, pw: pw })];
             case 1:
                 user = _b.sent();
                 q = user.queues.filter(function (a) { return a.title === title; })[0];

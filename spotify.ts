@@ -1,20 +1,20 @@
 import open from "open";
 import Spotify from "spotify-web-api-node";
-import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } from "./config";
+import { config } from "./config";
 import cors from "cors";
 import express, { Router } from "express";
 import fs from "fs";
-import { User } from "./database";
-import Mongoose from "mongoose";
+import { query } from "./db/index.js";
+// import { User } from "./database";
 
 const route = Router();
 
 route.use(cors());
 
 var spotifyApi = new Spotify({
-  clientId: CLIENT_ID,
-  clientSecret: CLIENT_SECRET,
-  redirectUri: REDIRECT_URI,
+  clientId: config.SPOTIFY_CLIENT_ID,
+  clientSecret: config.SPOTIFY_CLIENT_SECRET,
+  redirectUri: config.SPOTIFY_REDIRECT_URI,
 });
 
 const scopes = [
@@ -32,7 +32,7 @@ const scopes = [
 route.post("/login", async (req, res) => {
   try {
     const { pw, email } = req.body;
-    let user = await User.findOne({ email: email, pw: pw });
+    // let user = await User.findOne({ email: email, pw: pw });
 
     // if the user wasn't found
     // todo: implement actual registration. this is half-arsed
