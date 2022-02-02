@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import SearchResults from "../components/SearchResults";
 import { FaSpinner } from "react-icons/fa";
@@ -8,20 +8,20 @@ export default function Search() {
   const [res, setRes] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const onSubmit = async (e) => {
-    setLoading(true);
-    e.preventDefault();
-    let data = await axios.get("http://localhost:8000/spotify/searchSong", {
-      params: { query: q },
-    });
-    setLoading(false);
-    console.log(data.data);
-    setRes(data.data);
-  };
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/spotify/searchSong", {
+        params: { query: q },
+      })
+      .then((data) => {
+        setLoading(false);
+        setRes(data.data);
+      });
+  }, [q]);
 
   return (
     <main className="p-2 flex flex-col items-center justify-center">
-      <form className="flex flex-col gap-2" onSubmit={onSubmit}>
+      <form className="flex flex-col gap-2">
         <input
           className="bg-black rounded-md border-2 border-emerald-200"
           onChange={(e) => setQ(e.target.value)}
