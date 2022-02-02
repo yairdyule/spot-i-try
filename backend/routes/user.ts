@@ -12,19 +12,20 @@ userRouter.get("/", async (req, res) => {
 
 userRouter.post("/login", async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
     const result = await db.user.findUnique({
       where: {
-        username: username,
+        email: email,
       },
     });
+    console.log(result);
 
     if (result?.password == password) {
       res.status(200).send({ success: true, msg: "login success" });
     } else {
       res
-        .status(401)
+        .status(200)
         .send({ success: false, msg: "invalid login credentials" });
     }
   } catch (e) {
@@ -35,12 +36,17 @@ userRouter.post("/login", async (req, res) => {
 
 userRouter.post("/signup", async (req, res) => {
   try {
-    const { username, password } = req.body;
-    var result = await db.user.findUnique({
+    console.log("got in to signup");
+    console.log(req.body);
+
+    const { username, password, email } = req.body;
+    var result = await db.user.findFirst({
       where: {
-        username: username,
+        email: email,
       },
     });
+
+    console.log(result);
 
     if (result !== null) {
       return res.send({
@@ -51,10 +57,12 @@ userRouter.post("/signup", async (req, res) => {
 
     result = await db.user.create({
       data: {
-        username: username,
-        password,
+        name: username,
+        email: email,
+        password: password,
       },
     });
+    console.log(result);
     res.send({ login: true });
   } catch (e) {
     console.error(e + " in /signup");
