@@ -27,7 +27,7 @@ const router = Router();
 // route: /spotify/
 router.get("/", async (req, res) => {
   console.log("receieved a req");
-  res.redirect("http://localhost:8000/spotify/auth");
+  res.redirect("/spotify/auth");
 });
 
 // /spotify/auth
