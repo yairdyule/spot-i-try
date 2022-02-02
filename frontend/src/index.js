@@ -7,6 +7,8 @@ import Home from "./routes/home";
 import Authorize from "./routes/authorize";
 import Search from "./routes/search";
 import Profile from "./routes/profile";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -17,6 +19,8 @@ ReactDOM.render(
           <Route index element={<Home />} />
           <Route path="search" element={<Search />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route
             path="*"
             element={
