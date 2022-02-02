@@ -1,19 +1,23 @@
-import "./App.css";
-import { NavLink, Outlet } from "react-router-dom";
-import Navlink from "./components/Navlink";
-import { AiOutlineLock, AiOutlineHome, AiOutlineSearch } from "react-icons/ai";
-import { MdPersonOutline } from "react-icons/md";
+import logo from './logo.svg';
+import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <nav className="flex flex-row gap-4 justify-center py-4 border-b-2 text-lg">
-        <Navlink path="/authorize" Icon={AiOutlineLock} />
-        <Navlink path="/" Icon={AiOutlineHome} />
-        <Navlink path="/search" Icon={AiOutlineSearch} />
-        <Navlink path="/profile" Icon={MdPersonOutline} />
-      </nav>
-      <Outlet />
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn React
+        </a>
+      </header>
     </div>
   );
 }
