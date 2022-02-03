@@ -33,7 +33,7 @@ enum classNames {
   button = "bg-emerald-300 rounded-md font-medium text-center",
 }
 
-export const Login: React.FC<{}> = (): JSX.Element => {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [data, setData] = useState<ApiResult | null>(null);
@@ -76,4 +76,4 @@ export const Login: React.FC<{}> = (): JSX.Element => {
       </form>
     </Main>
   );
-};
+}
