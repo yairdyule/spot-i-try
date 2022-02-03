@@ -1,24 +1,19 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { NavLink, Outlet } from "react-router-dom";
+import Navlink from "./components/Navlink";
+import { AiOutlineLock, AiOutlineHome, AiOutlineSearch } from "react-icons/ai";
+import { MdPersonOutline } from "react-icons/md";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <nav className="flex flex-row gap-4 justify-center py-4 border-b-2 text-lg">
+        <Navlink path="/authorize" Child={AiOutlineLock} />
+        <Navlink path="/" Child={AiOutlineHome} />
+        <Navlink path="/search" Child={AiOutlineSearch} />
+        <Navlink path="/profile" Child={MdPersonOutline} />
+      </nav>
+      <Outlet />
     </div>
   );
 }
