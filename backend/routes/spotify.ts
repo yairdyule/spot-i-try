@@ -78,19 +78,27 @@ router.get("/callback", async (req, res) => {
 });
 
 router.get("/searchSong", async (req, res) => {
-  let { query } = req.query;
-  let tracks = await api.searchTracks(query as string, { limit: 10 });
-  let sendies = tracks.body.tracks?.items.map((song) => {
-    let artists = song.artists.map((artist) => artist.name);
-    return {
-      name: song.name,
-      id: song.id,
-      img: song.album.images[0].url,
-      uri: song.uri,
-      artists: artists,
-    };
-  });
-  res.send(sendies);
+  try {
+    let { query } = req.query;
+    if (query?.length == 0) {
+      return res.send([]);
+    }
+    let tracks = await api.searchTracks(query as string, { limit: 10 });
+    let sendies = tracks.body.tracks?.items.map((song) => {
+      let artists = song.artists.map((artist) => artist.name);
+      return {
+        name: song.name,
+        id: song.id,
+        img: song.album.images[0].url,
+        uri: song.uri,
+        artists: artists,
+      };
+    });
+    res.send(sendies);
+  } catch (err) {
+    console.error(err + " in searchsong");
+    return res.status(500).send("sorry about that!");
+  }
 });
 
 export default router;
