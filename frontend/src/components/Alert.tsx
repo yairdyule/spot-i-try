@@ -3,7 +3,7 @@ interface AlertProps {
   action: string;
 }
 
-export const Alert: React.FC<AlertProps> = ({ success, action }) => {
+export default function Alert({ success, action }: AlertProps) {
   return (
     <div
       className={
@@ -17,4 +17,4 @@ export const Alert: React.FC<AlertProps> = ({ success, action }) => {
       </h1>
     </div>
   );
-};
+}
