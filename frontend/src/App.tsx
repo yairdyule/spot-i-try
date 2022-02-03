@@ -1,5 +1,4 @@
-import "./App.css";
-import { NavLink, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import Navlink from "./components/Navlink";
 import { AiOutlineLock, AiOutlineHome, AiOutlineSearch } from "react-icons/ai";
 import { MdPersonOutline } from "react-icons/md";
