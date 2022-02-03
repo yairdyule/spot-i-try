@@ -3,8 +3,8 @@ import axios from "axios";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import { Main } from "./Main";
-import { Alert } from "./Alert";
+import Main from "./Main";
+import Alert from "./Alert";
 
 type ApiResult = {
   /**
