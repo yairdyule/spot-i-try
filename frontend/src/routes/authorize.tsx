@@ -2,7 +2,7 @@ import Main from "../components/Main";
 
 enum Classnames {
   h2 = "text-lg pb-4",
-  div = "flex flex-col gap-2",
+  div = "flex flex-col gap-2 justify-center items-center",
 }
 
 export default function Authorize() {
@@ -10,7 +10,8 @@ export default function Authorize() {
     <Main>
       <h2 className={Classnames.h2}>
         {" "}
-        We've gotta sort some stuff out with Spotify first.
+        We've gotta sort some stuff out with{" "}
+        <span className="text-emerald-300">Spotify</span> first.
       </h2>
       <div className={Classnames.div}>
         <p>
@@ -22,7 +23,12 @@ export default function Authorize() {
           them, for your friends' queues!
         </p>
         <p>If you're cool with that, we can get going.</p>
-        <a href="http://localhost:8000/spotify/auth">gopher it</a>
+        <a
+          href="http://localhost:8000/spotify/auth"
+          className="text-emerald-300"
+        >
+          gopher it
+        </a>
       </div>
     </Main>
   );
