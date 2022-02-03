@@ -11,11 +11,11 @@ export default function Home() {
     <Main>
       <h1 className={Classnames.h1}>Welcome to Vynilla!</h1>
       <p>
-        You may
+        You may{" "}
         <Link to="/login" className={Classnames.Link}>
           login
         </Link>
-        , or, of course, you can
+        , or, of course, you can{" "}
         <Link to="/signup" className={Classnames.Link}>
           signup
         </Link>
