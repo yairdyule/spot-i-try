@@ -22,7 +22,13 @@ userRouter.post("/login", async (req, res) => {
     console.log(result);
 
     if (result?.password == password) {
-      res.status(200).send({ success: true, msg: "login success" });
+      res
+        .status(200)
+        .send({
+          success: true,
+          user: { id: result?.id, name: result?.name },
+          msg: "login success",
+        });
     } else {
       res
         .status(200)
