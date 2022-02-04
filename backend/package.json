@@ -2,7 +2,7 @@
   "name": "spot_bot",
   "version": "1.0.0",
   "description": "arst",
-  "main": "index.js",
+  "main": "./src/server.js",
   "scripts": {
     "start": "concurrently \"tsc -w\" \"nodemon ./src/server.js\" "
   },
