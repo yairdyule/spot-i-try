@@ -22,13 +22,11 @@ userRouter.post("/login", async (req, res) => {
     console.log(result);
 
     if (result?.password == password) {
-      res
-        .status(200)
-        .send({
-          success: true,
-          user: { id: result?.id, name: result?.name },
-          msg: "login success",
-        });
+      res.status(200).send({
+        success: true,
+        user: { id: result?.id, name: result?.name },
+        msg: "login success",
+      });
     } else {
       res
         .status(200)
@@ -70,6 +68,48 @@ userRouter.post("/signup", async (req, res) => {
     });
     console.log(result);
     res.send({ login: true });
+  } catch (e) {
+    console.error(e + " in /signup");
+    res.status(500).send({ success: false, msg: "our bad, server error" });
+  }
+});
+
+userRouter.post("/details", async (req, res) => {
+  try {
+    console.log("got in to details");
+    console.log(req.body.id);
+
+    const id = req.body.id;
+
+    var result = await db.user.findFirst({
+      where: {
+        id: id,
+      },
+      select: {
+        queues: true,
+        friends: true,
+        profile: true,
+      },
+    });
+
+    //want to get a user's...
+    //  queues
+    //  friends
+    //  profile (bio, etc)
+
+    console.log(result);
+
+    if (result === null) {
+      return res.send({
+        success: false,
+        msg: "nobody exists with that id",
+      });
+    }
+
+    res.send({
+      success: true,
+      details: result,
+    });
   } catch (e) {
     console.error(e + " in /signup");
     res.status(500).send({ success: false, msg: "our bad, server error" });

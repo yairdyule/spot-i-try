@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { UserContext } from "../hooks/UserContext";
+import ProfileDetails from "../components/ProfileDetails";
 import Main from "../components/Main";
 
 export default function Profile() {
@@ -12,7 +13,10 @@ export default function Profile() {
   return (
     <Main>
       {isLoggedIn ? (
-        <h1>Hello, {name}!</h1>
+        <>
+          <h1>Hello, {name}!</h1>
+          <ProfileDetails id={User.user?.id as number} />
+        </>
       ) : (
         <h1>
           You must{" "}
