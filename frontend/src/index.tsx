@@ -1,5 +1,5 @@
 import "./index.css";
-import React, { useState } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./App";
@@ -10,12 +10,6 @@ import Profile from "./routes/profile";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import { UserContextProvider } from "./hooks/UserContextProvider";
-
-type User = {
-  name: string;
-  id: number;
-};
-// const [value, setValue] = useState({} as User);
 
 ReactDOM.render(
   <React.StrictMode>
