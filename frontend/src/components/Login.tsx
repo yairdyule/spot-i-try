@@ -11,6 +11,7 @@ import { UserContextProvider } from "../hooks/UserContextProvider";
 type User = {
   name: string;
   id: number;
+  loggedIn: boolean;
 };
 
 type Data = {
@@ -57,6 +58,7 @@ export default function Login() {
       User?.setUser({
         id: data.data.user.id,
         name: data.data.user.name,
+        loggedIn: true,
       });
     }
     setData(data.data);
@@ -64,6 +66,7 @@ export default function Login() {
 
   return (
     <Main>
+      {User?.user?.loggedIn && <h2>Omg hi {User.user.name} </h2>}
       {data && <Alert success={data.success} action="logged in" />}
       <h1>login</h1>{" "}
       <form className={classNames.form} onSubmit={(e) => login(e)}>

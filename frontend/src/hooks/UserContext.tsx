@@ -3,6 +3,7 @@ import { createContext } from "react";
 type User = {
   name?: string;
   id?: number;
+  loggedIn: boolean;
 };
 interface IUserContext {
   user: User | null;

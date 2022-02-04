@@ -6,7 +6,7 @@ type Props = {
 };
 
 export const UserContextProvider = ({ children }: Props) => {
-  const [value, setValue] = useState({});
+  const [value, setValue] = useState({ loggedIn: false });
   return (
     <UserContext.Provider value={{ user: value, setUser: setValue }}>
       {children}
