@@ -1,5 +1,5 @@
 import "./index.css";
-import React, { useState } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./App";
@@ -11,21 +11,29 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import { UserContextProvider } from "./hooks/UserContextProvider";
 
-type User = {
-  name: string;
-  id: number;
-};
-// const [value, setValue] = useState({} as User);
-
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />}>
           <Route path="authorize" element={<Authorize />} />
-          <Route index element={<Home />} />
+          <Route
+            index
+            element={
+              <UserContextProvider>
+                <Home />
+              </UserContextProvider>
+            }
+          />
           <Route path="search" element={<Search />} />
-          <Route path="profile" element={<Profile />} />
+          <Route
+            path="profile"
+            element={
+              <UserContextProvider>
+                <Profile />
+              </UserContextProvider>
+            }
+          />
           <Route
             path="/login"
             element={
@@ -34,7 +42,14 @@ ReactDOM.render(
               </UserContextProvider>
             }
           />
-          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/signup"
+            element={
+              <UserContextProvider>
+                <Signup />
+              </UserContextProvider>
+            }
+          />
           <Route
             path="*"
             element={
