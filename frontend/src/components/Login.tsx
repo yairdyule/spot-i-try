@@ -1,20 +1,28 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
 import Main from "./Main";
 import Alert from "./Alert";
+import { UserContext } from "../hooks/UserContext";
+import { UserContextProvider } from "../hooks/UserContextProvider";
+
+type User = {
+  name: string;
+  id: number;
+};
+
+type Data = {
+  user: User;
+  success: boolean;
+};
 
 type ApiResult = {
   /**
-   * Whether the request succeeded
-   */
-  success: boolean;
-  /**
    * The data returned from the request
    */
-  data: string;
+  data: Data;
 };
 
 //omfg how did i just discover docstrings
@@ -36,18 +44,22 @@ enum classNames {
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [data, setData] = useState<ApiResult | null>(null);
+  const [data, setData] = useState<Data | null>(null);
+  const User = useContext(UserContext);
 
   const login = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let { data }: { data: ApiResult } = await axios.post(
-      "http://localhost:8000/user/login",
-      {
-        email: email,
-        password: password,
-      }
-    );
-    setData(data);
+    let data: ApiResult = await axios.post("http://localhost:8000/user/login", {
+      email: email,
+      password: password,
+    });
+    if (data.data.success) {
+      User?.setUser({
+        id: data.data.user.id,
+        name: data.data.user.name,
+      });
+    }
+    setData(data.data);
   };
 
   return (
@@ -72,7 +84,6 @@ export default function Login() {
         <button type="submit" className={classNames.button}>
           login
         </button>
-        );
       </form>
     </Main>
   );
