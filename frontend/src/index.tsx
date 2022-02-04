@@ -17,9 +17,23 @@ ReactDOM.render(
       <Routes>
         <Route path="/" element={<App />}>
           <Route path="authorize" element={<Authorize />} />
-          <Route index element={<Home />} />
+          <Route
+            index
+            element={
+              <UserContextProvider>
+                <Home />
+              </UserContextProvider>
+            }
+          />
           <Route path="search" element={<Search />} />
-          <Route path="profile" element={<Profile />} />
+          <Route
+            path="profile"
+            element={
+              <UserContextProvider>
+                <Profile />
+              </UserContextProvider>
+            }
+          />
           <Route
             path="/login"
             element={
@@ -28,7 +42,14 @@ ReactDOM.render(
               </UserContextProvider>
             }
           />
-          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/signup"
+            element={
+              <UserContextProvider>
+                <Signup />
+              </UserContextProvider>
+            }
+          />
           <Route
             path="*"
             element={
