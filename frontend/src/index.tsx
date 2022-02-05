@@ -32,7 +32,14 @@ ReactDOM.render(
               </UserContextProvider>
             }
           />
-          <Route path="search" element={<Search />} />
+          <Route
+            path="search"
+            element={
+              <UserContextProvider>
+                <Search />
+              </UserContextProvider>
+            }
+          />
           <Route
             path="profile"
             element={
