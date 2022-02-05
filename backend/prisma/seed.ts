@@ -3,41 +3,47 @@ const prisma = new PrismaClient();
 
 const data = [
   {
+    id: 4,
     name: "moosh",
-    email: "moosh@prisma.io",
-    password: " guess",
-    queues: {
-      create: [
-        {
-          title: "flowers",
-          content: {
-            create: [
-              {
-                id: "bartsneio",
-                name: "sunshine on mym bouldrs",
-                artists: ["john denver"],
-              },
-            ],
-          },
-        },
-      ],
+    email: "moosh@bobo.io",
+    password: "bobo",
+    profile: {
+      create: {
+        bio: "omg omg omgo m i'm MOOSH",
+      },
     },
   },
   {
+    id: 3,
+    name: "preston",
+    email: "preston@bobo.io",
+    password: "bobo",
+    profile: {
+      create: {
+        bio: "omg omg omgo m i'm presotno",
+      },
+    },
+  },
+  {
+    id: 2,
+    name: "bobo",
+    email: "bobo@bobo.io",
+    password: "bobo",
+    profile: {
+      create: {
+        bio: "meow! i'm bobo!",
+      },
+    },
+  },
+  {
+    id: 1,
     name: "jared",
-    email: "jared@prisma.io",
-    password: " guess",
-    queues: {
-      create: [
-        {
-          title: "house *",
-          content: {
-            create: [
-              { id: "arstneio", name: "doja bat", artists: ["dojba", "cat"] },
-            ],
-          },
-        },
-      ],
+    email: "jared@bobo.io",
+    password: "bobo",
+    profile: {
+      create: {
+        bio: "really making someprogress on this'ere website",
+      },
     },
   },
 ];
