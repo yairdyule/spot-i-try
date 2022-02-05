@@ -1,3 +1,5 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Main from "../components/Main";
 
@@ -6,7 +8,21 @@ enum Classnames {
   Link = "text-emerald-300 font-semibold",
 }
 
+type Queue = {
+  title: string;
+  id: string;
+  published: boolean;
+};
+
 export default function Home() {
+  const [queues, setQueues] = useState([] as Queue[]);
+
+  useEffect(() => {
+    axios.get("http://localhost:8000/user/queues").then(({ data }) => {
+      setQueues(data.queues);
+    });
+  });
+
   return (
     <Main>
       <h1 className={Classnames.h1}>Welcome to Vynilla!</h1>
@@ -20,7 +36,9 @@ export default function Home() {
           signup
         </Link>
       </p>
-      {/*signup*/}
+      {queues.map((q: Queue) => (
+        <p>{q.title}</p>
+      ))}
     </Main>
   );
 }

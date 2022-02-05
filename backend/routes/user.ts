@@ -5,7 +5,7 @@ const userRouter = Router();
 const db = new PrismaClient();
 
 //return all queues
-userRouter.get("/", async (req, res) => {
+userRouter.get("/queues", async (req, res) => {
   const allQueues = await db.queue.findMany({});
   res.send({ queues: allQueues });
 });
