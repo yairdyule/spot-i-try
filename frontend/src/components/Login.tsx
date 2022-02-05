@@ -12,6 +12,7 @@ type User = {
   name: string;
   id: number;
   loggedIn: boolean;
+  authorizedWithSpotify: boolean; //todo - consolidate types
 };
 
 type Data = {
@@ -55,39 +56,52 @@ export default function Login() {
       password: password,
     });
     if (data.data.success) {
-      User?.setUser({
+      // User?.setUser({
+      //   id: data.data.user.id,
+      //   name: data.data.user.name,
+      //   loggedIn: true,
+      // });
+      let oldUser = User?.user;
+      let newUser = {
         id: data.data.user.id,
         name: data.data.user.name,
         loggedIn: true,
-      });
+        authorizedWithSpotify: !!oldUser?.authorizedWithSpotify,
+      };
+      User?.setUser(newUser);
     }
     setData(data.data);
   };
 
   return (
     <Main>
-      {User?.user?.loggedIn && <h2>Omg hi {User.user.name} </h2>}
       {data && <Alert success={data.success} action="logged in" />}
-      <h1>login</h1>{" "}
-      <form className={classNames.form} onSubmit={(e) => login(e)}>
-        <input
-          type="email"
-          placeholder="email"
-          className={classNames.input}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="password"
-          className={classNames.input}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit" className={classNames.button}>
-          login
-        </button>
-      </form>
+      {User?.user?.loggedIn ? (
+        <h2>Omg hi {User.user.name} </h2>
+      ) : (
+        <>
+          <h1>login</h1>
+          <form className={classNames.form} onSubmit={(e) => login(e)}>
+            <input
+              type="email"
+              placeholder="email"
+              className={classNames.input}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="password"
+              className={classNames.input}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button type="submit" className={classNames.button}>
+              login
+            </button>
+          </form>
+        </>
+      )}
     </Main>
   );
 }
