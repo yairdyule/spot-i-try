@@ -76,9 +76,6 @@ userRouter.post("/signup", async (req, res) => {
 
 userRouter.post("/details", async (req, res) => {
   try {
-    console.log("got in to details");
-    console.log(req.body.id);
-
     const id = req.body.id;
 
     var result = await db.user.findFirst({
@@ -86,11 +83,30 @@ userRouter.post("/details", async (req, res) => {
         id: id,
       },
       select: {
-        queues: true,
-        friends: true,
-        profile: true,
+        incomingQueues: {
+          select: {
+            title: true,
+          },
+        },
+        friends: {
+          select: {
+            name: true,
+          },
+        },
+        sentQueues: {
+          select: {
+            title: true,
+          },
+        },
+        profile: {
+          select: {
+            bio: true,
+          },
+        },
       },
     });
+
+    // console.log(`'user's queues: ${console.table(queues)}`);
 
     //want to get a user's...
     //  queues
