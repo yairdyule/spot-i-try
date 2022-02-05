@@ -40,9 +40,6 @@ userRouter.post("/login", async (req, res) => {
 
 userRouter.post("/signup", async (req, res) => {
   try {
-    console.log("got in to signup");
-    console.log(req.body);
-
     const { username, password, email } = req.body;
     var result = await db.user.findFirst({
       where: {
@@ -50,11 +47,10 @@ userRouter.post("/signup", async (req, res) => {
       },
     });
 
-    console.log(result);
-
     if (result !== null) {
+      console.log("dupe registration");
       return res.send({
-        login: false,
+        success: false,
         msg: "someone already exists with that username",
       });
     }
@@ -66,8 +62,11 @@ userRouter.post("/signup", async (req, res) => {
         password: password,
       },
     });
-    console.log(result);
-    res.send({ login: true });
+    res.status(200).send({
+      success: true,
+      user: { id: result?.id, name: result?.name },
+      msg: "signup success",
+    });
   } catch (e) {
     console.error(e + " in /signup");
     res.status(500).send({ success: false, msg: "our bad, server error" });
