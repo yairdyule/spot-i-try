@@ -36,9 +36,6 @@ export default function Home() {
           <h1 className={Classnames.h1}>
             Welcome to Vynilla, {User.user.name}!
           </h1>
-          {queues.map((q: Queue) => (
-            <p>{q.title}</p>
-          ))}
         </>
       ) : (
         <>
