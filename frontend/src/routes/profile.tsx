@@ -8,13 +8,11 @@ export default function Profile() {
   const User = useContext(UserContext);
 
   const isLoggedIn = User?.user?.loggedIn;
-  const name = User?.user?.name;
 
   return (
     <Main>
       {isLoggedIn ? (
         <>
-          <h1>Hello, {name}!</h1>
           <ProfileDetails id={User.user?.id as number} />
         </>
       ) : (
