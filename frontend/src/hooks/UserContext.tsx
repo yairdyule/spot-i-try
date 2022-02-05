@@ -4,6 +4,7 @@ type User = {
   name?: string;
   id?: number;
   loggedIn: boolean;
+  authorizedWithSpotify: boolean;
 };
 interface IUserContext {
   user: User | null;
