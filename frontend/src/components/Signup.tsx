@@ -1,7 +1,8 @@
 import Alert from "./Alert";
 import Main from "./Main";
 import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { UserContext } from "../hooks/UserContext";
 
 interface ApiResponse {
   success: boolean;
@@ -18,6 +19,7 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [data, setData] = useState<ApiResponse | null>(null);
+  const User = useContext(UserContext);
 
   const login = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -29,6 +31,21 @@ export default function Signup() {
       })
       .then(({ data }) => {
         // console.log(data);
+        if (data.success) {
+          // User?.setUser({
+          //   id: data.data.user.id,
+          //   name: data.data.user.name,
+          //   loggedIn: true,
+          // });
+          let oldUser = User?.user;
+          let newUser = {
+            id: data.user.id,
+            name: data.user.name,
+            loggedIn: true,
+            authorizedWithSpotify: !!oldUser?.authorizedWithSpotify,
+          };
+          User?.setUser(newUser);
+        }
         setData(data);
       });
   };
