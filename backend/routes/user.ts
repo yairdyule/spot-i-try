@@ -4,10 +4,10 @@ import { PrismaClient } from "@prisma/client";
 const userRouter = Router();
 const db = new PrismaClient();
 
-//return all users
+//return all queues
 userRouter.get("/", async (req, res) => {
-  const allUsers = await db.user.findMany();
-  res.send({ users: allUsers });
+  const allQueues = await db.queue.findMany({});
+  res.send({ queues: allQueues });
 });
 
 userRouter.post("/login", async (req, res) => {
