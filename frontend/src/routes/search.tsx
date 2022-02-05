@@ -8,7 +8,24 @@ export default function Search() {
   const [res, setRes] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   axios
+  //     .get("http://localhost:8000/spotify/searchSong", {
+  //       params: { query: q },
+  //     })
+  //     .then((data) => {
+  //       setLoading(false);
+  //       setRes(data.data);
+  //     });
+  //   return () => {
+  //     setLoading(false);
+  //     setRes([]);
+  //     setQ("");
+  //   };
+  // }, []);
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
     axios
       .get("http://localhost:8000/spotify/searchSong", {
         params: { query: q },
@@ -17,11 +34,16 @@ export default function Search() {
         setLoading(false);
         setRes(data.data);
       });
-  }, [q]);
+  };
 
   return (
     <main className="p-2 flex flex-col items-center justify-center">
-      <form className="flex flex-col gap-2">
+      <form
+        className="flex flex-col gap-2"
+        onSubmit={(e) => {
+          submit(e);
+        }}
+      >
         <input
           className="bg-black rounded-md border-2 border-emerald-200"
           onChange={(e) => setQ(e.target.value)}

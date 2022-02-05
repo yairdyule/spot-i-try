@@ -21,7 +21,10 @@ export default function Home() {
     axios.get("http://localhost:8000/user/queues").then(({ data }) => {
       setQueues(data.queues);
     });
-  });
+    return () => {
+      setQueues([]);
+    };
+  }, []);
 
   return (
     <Main>

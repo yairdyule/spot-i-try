@@ -16,6 +16,9 @@ export default function ProfileDetails({ id }: Props) {
         console.log(data);
         setData("score");
       });
+    return () => {
+      setData("");
+    };
   }, []);
 
   return <h1>{data}</h1>;
