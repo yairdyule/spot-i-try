@@ -16,7 +16,14 @@ ReactDOM.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />}>
-          <Route path="authorize" element={<Authorize />} />
+          <Route
+            path="authorize"
+            element={
+              <UserContextProvider>
+                <Authorize />
+              </UserContextProvider>
+            }
+          />
           <Route
             index
             element={

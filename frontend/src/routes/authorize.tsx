@@ -1,4 +1,6 @@
+import { useContext } from "react";
 import Main from "../components/Main";
+import { UserContext } from "../hooks/UserContext";
 
 enum Classnames {
   h2 = "text-lg pb-4",
@@ -26,6 +28,9 @@ export default function Authorize() {
         <a
           href="http://localhost:8000/spotify/auth"
           className="text-emerald-300"
+          onClick={() => {
+            // setAuthorized();
+          }}
         >
           gopher it
         </a>
