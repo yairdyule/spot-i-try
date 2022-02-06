@@ -3,19 +3,20 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../hooks/UserContext";
 import { FaPlusCircle } from "react-icons/fa";
 import { FiGithub } from "react-icons/fi";
+import Modal from "../components/Modal";
 
 type Props = {
   id: number;
 };
 
-export type Friend = {
+export type User = {
   name: string;
   id: number;
 };
 
 type ProfileDetails = {
-  friends: [Friend];
-  friendRequests: [Friend];
+  friends: [User];
+  friendRequests: [User];
   incomingQueues: [{ title: string }];
   sentQueues: [{ title: string }];
   profile: {
@@ -31,7 +32,8 @@ enum Classnames {
 
 export default function ProfileDetails({ id }: Props) {
   const [details, setDetails] = useState(null as ProfileDetails);
-  const [friends, setFriends] = useState<Friend[]>([]);
+  const [friends, setFriends] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [incomingQueues, setIncoming] = useState([]);
   const [outgoingQueues, setOutgoing] = useState([]);
   const User = useContext(UserContext);
@@ -74,6 +76,12 @@ export default function ProfileDetails({ id }: Props) {
       });
   };
 
+  const getUsers = async () => {
+    axios.get("http://localhost:8000/user/").then(({ data }) => {
+      setUsers(data.users as User[]);
+    });
+  };
+
   useEffect(() => {
     axios
       .post("http://localhost:8000/user/details", { id: id })
@@ -85,6 +93,7 @@ export default function ProfileDetails({ id }: Props) {
       await getFriends();
       await getIncomingQueues();
       await getOutgoingQueues();
+      await getUsers();
     })();
 
     return () => {
@@ -94,7 +103,7 @@ export default function ProfileDetails({ id }: Props) {
 
   return (
     <>
-      {incomingQueues && outgoingQueues && friends && (
+      {incomingQueues && outgoingQueues && friends && users && (
         <>
           <div className={Classnames.row}>
             <FiGithub className="text-white bg-emerald-300 w-20 h-20 p-2 rounded-full" />
@@ -134,8 +143,8 @@ export default function ProfileDetails({ id }: Props) {
                   return <li>{friend.name}</li>;
                 })}
               </ul>
-              {/*add friend icon*/}
-              <FaPlusCircle onClick={() => getFriends()} />
+              {/*add friend*/}
+              <Modal users={users} userId={User?.user?.id as number} />
             </div>
 
             <div className={Classnames.col}>
