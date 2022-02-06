@@ -39,13 +39,13 @@ model Profile {
 }
 
 model User {
-  id              Int      @id @default(autoincrement())
-  email           String   @unique
-  password        String
-  name            String
-  profile         Profile?
-  sentQueues      Queue[]  @relation("sentQueues")
-  incomingQueues  Queue[]  @relation("incomingQueues")
-  friends         User[]   @relation("friends")
-  friendsRelation User[]   @relation("friends") // god bless https://stackoverflow.com/questions/65162657/one-to-many-self-relation-in-prisma-schema
+  id             Int      @id @default(autoincrement())
+  email          String   @unique
+  password       String
+  name           String
+  profile        Profile?
+  sentQueues     Queue[]  @relation("sentQueues")
+  incomingQueues Queue[]  @relation("incomingQueues")
+  friends        User[]   @relation("friends") // god bless https://stackoverflow.com/questions/65162657/one-to-many-self-relation-in-prisma-schema
+  friendRequests User[]   @relation("friends")
 }
