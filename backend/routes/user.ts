@@ -19,7 +19,6 @@ userRouter.post("/login", async (req, res) => {
         email: email,
       },
     });
-    console.log(result);
 
     if (result?.password == password) {
       res.status(200).send({
@@ -87,11 +86,8 @@ userRouter.post("/details", async (req, res) => {
             title: true,
           },
         },
-        friends: {
-          select: {
-            name: true,
-          },
-        },
+        friends: { select: { name: true, id: true } },
+        friendRequests: { select: { name: true, id: true } },
         sentQueues: {
           select: {
             title: true,
@@ -112,8 +108,6 @@ userRouter.post("/details", async (req, res) => {
     //  friends
     //  profile (bio, etc)
 
-    console.log(result);
-
     if (result === null) {
       return res.send({
         success: false,
@@ -130,5 +124,90 @@ userRouter.post("/details", async (req, res) => {
     res.status(500).send({ success: false, msg: "our bad, server error" });
   }
 });
+
+userRouter.get("/incomingQueues", async (req, res) => {
+  try {
+    console.log("/incomingQueues");
+    let data = req.query;
+    let userId = parseInt(data.userId as string);
+
+    let dbResult = await db.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select: {
+        incomingQueues: true,
+      },
+    });
+
+    res.send({ success: true, incomingQueues: dbResult?.incomingQueues });
+  } catch (err) {
+    console.error(err + " in /incomingQueues");
+    res.status(500).send({ success: false, msg: "our bad, server error" });
+  }
+});
+
+userRouter.get("/outgoingQueues", async (req, res) => {
+  try {
+    let data = req.query;
+    let userId = parseInt(data.userId as string);
+    console.log("/outgoingQueues");
+
+    let dbResult = await db.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select: {
+        sentQueues: true,
+      },
+    });
+
+    res.send({ success: true, outgoingQueues: dbResult?.sentQueues });
+  } catch (err) {
+    console.error(err + " in /outgoingQueues");
+    res.status(500).send({ success: false, msg: "our bad, server error" });
+  }
+});
+
+//get friend reqs:
+//      sent frqs, received frqs, and established friendships
+//need: user id
+userRouter.get("/getFriends", async (req, res) => {
+  try {
+    console.log("/getFriends");
+    let data = req.query;
+
+    let userId = parseInt(data.userId as string);
+
+    //all requests
+    let allFriends = await db.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select: {
+        friends: true,
+      },
+    });
+
+    let requests = await db.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select: {
+        friendRequests: true,
+      },
+    });
+
+    res.send({
+      friendRequests: requests?.friendRequests,
+      friends: allFriends?.friends,
+    });
+  } catch (err) {
+    console.error(err + " in /getFriends");
+    res.status(500).send({ success: false, msg: "our bad, server error" });
+  }
+});
+
+userRouter.post("/sendFriendRequest", async (req, res) => {});
 
 export default userRouter;
