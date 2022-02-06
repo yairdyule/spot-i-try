@@ -8,8 +8,14 @@ type Props = {
   id: number;
 };
 
+export type Friend = {
+  name: string;
+  id: number;
+};
+
 type ProfileDetails = {
-  friends: [{ name: string }];
+  friends: [Friend];
+  friendRequests: [Friend];
   incomingQueues: [{ title: string }];
   sentQueues: [{ title: string }];
   profile: {
@@ -25,15 +31,62 @@ enum Classnames {
 
 export default function ProfileDetails({ id }: Props) {
   const [details, setDetails] = useState(null as ProfileDetails);
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [incomingQueues, setIncoming] = useState([]);
+  const [outgoingQueues, setOutgoing] = useState([]);
   const User = useContext(UserContext);
+
+  const getFriends = async () => {
+    axios
+      .get("http://localhost:8000/user/getFriends", {
+        params: { userId: User?.user?.id },
+      })
+      .then(({ data }) => {
+        let friendRequests: [{ name: string; id: number }] =
+          data.friendRequests;
+        let friends: [{ name: string; id: number }] = data.friends;
+
+        setFriends(
+          friends.filter(
+            (friend) => friendRequests.map((req) => req.id).includes(friend.id) //by design, a "friend" is only one which is in both "friends" and "friendRequests"
+          )
+        );
+      });
+  };
+
+  const getIncomingQueues = async () => {
+    axios
+      .get("http://localhost:8000/user/incomingQueues", {
+        params: { userId: User?.user?.id },
+      })
+      .then(({ data }) => {
+        setIncoming(data.incomingQueues);
+      });
+  };
+
+  const getOutgoingQueues = async () => {
+    axios
+      .get("http://localhost:8000/user/outgoingQueues", {
+        params: { userId: User?.user?.id },
+      })
+      .then(({ data }) => {
+        setOutgoing(data.outgoingQueues);
+      });
+  };
 
   useEffect(() => {
     axios
       .post("http://localhost:8000/user/details", { id: id })
       .then((data) => {
-        console.log(data.data.details);
         setDetails(data.data.details);
       });
+
+    (async () => {
+      await getFriends();
+      await getIncomingQueues();
+      await getOutgoingQueues();
+    })();
+
     return () => {
       setDetails(null);
     };
@@ -41,7 +94,7 @@ export default function ProfileDetails({ id }: Props) {
 
   return (
     <>
-      {details && (
+      {incomingQueues && outgoingQueues && friends && (
         <>
           <div className={Classnames.row}>
             <FiGithub className="text-white bg-emerald-300 w-20 h-20 p-2 rounded-full" />
@@ -51,30 +104,25 @@ export default function ProfileDetails({ id }: Props) {
               </h1>
               <div className="flex flex-row gap-3">
                 <p>
-                  <span className="font-semibold">
-                    {details.friends.length}
-                  </span>{" "}
+                  <span className="font-semibold">{friends.length}</span>{" "}
                   {"friend"}
-                  {details.friends.length > 1 && "s"}
+                  {friends.length > 1 && "s"}
                 </p>
-                |
+                <span className="text-emerald-300">|</span>
                 <p>
-                  <span className="font-semibold">
-                    {details.sentQueues.length}
-                  </span>{" "}
+                  <span className="font-semibold">{outgoingQueues.length}</span>{" "}
                   {"Outgoing Queue"}
-                  {details.sentQueues.length > 1 && "s"}
+                  {outgoingQueues.length > 1 && "s"}
                 </p>
-                |
+                <span className="text-emerald-300">|</span>
+
                 <p>
-                  <span className="font-semibold">
-                    {details.incomingQueues.length}
-                  </span>{" "}
+                  <span className="font-semibold">{incomingQueues.length}</span>{" "}
                   {"Incoming Queue"}
-                  {details.incomingQueues.length > 1 && "s"}
+                  {incomingQueues.length > 1 && "s"}
                 </p>
               </div>
-              <p>{details.profile.bio}</p>
+              <p>{details?.profile.bio}</p>
             </div>
           </div>
 
@@ -82,12 +130,12 @@ export default function ProfileDetails({ id }: Props) {
             <div className={Classnames.col}>
               <h2 className={Classnames.h1}>Friends </h2>
               <ul>
-                {details?.friends.map((friend: { name: string }) => {
+                {friends.map((friend: { name: string }) => {
                   return <li>{friend.name}</li>;
                 })}
               </ul>
               {/*add friend icon*/}
-              <FaPlusCircle />
+              <FaPlusCircle onClick={() => getFriends()} />
             </div>
 
             <div className={Classnames.col}>
