@@ -258,10 +258,7 @@ router.get("/exportQueue", async (req, res) => {
     },
   });
 
-  let trackIds = queueDetails?.content.map((song) => ({
-    id: song.id,
-  }));
-
+  let trackIds = queueDetails?.content.map((song) => song.id);
   //export it to spotify.
   // - check if it exists already - if so, add tracks that aren't in it alr
   let playlists = await api.getUserPlaylists();
@@ -282,7 +279,6 @@ router.get("/exportQueue", async (req, res) => {
         );
       });
   }
-  // - if not... add whole thing
 });
 
 export default router;
