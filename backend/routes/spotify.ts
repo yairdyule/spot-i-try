@@ -101,4 +101,188 @@ router.get("/searchSong", async (req, res) => {
   }
 });
 
+router.get("/setPlayback", async (req, res) => {
+  try {
+    let { id } = req.query;
+    // let setPlay = await api. wait hold up doesn't look like there's an endpoint for that
+  } catch (err) {
+    console.error(err + " in setPlayback");
+    return res.status(500).send("sorry about that!");
+  }
+});
+
+//create q in the db for this user
+//doesn't *have* to go to somebody, but can
+//need:
+// - user id
+// - friend's id?
+// - queue title
+// - queue description
+router.post("/createQueue", async (req, res) => {
+  try {
+    let { userId, title, description = null, friendId = null } = req.body;
+    let results;
+    if (friendId) {
+      results = await db.queue.create({
+        data: {
+          title: title,
+          description: description,
+          sentBy: userId,
+          sentTo: friendId,
+        },
+      });
+    } else {
+      results = await db.queue.create({
+        data: {
+          title: title,
+          description: description,
+          sentBy: userId,
+        },
+      });
+    }
+    res.send({
+      success: true,
+      queue: results,
+      msg: "successfully created queue",
+    });
+  } catch (err) {
+    console.error(err + " in createQueue");
+    return res
+      .status(500)
+      .send({ success: false, msg: "error creating queue" });
+  }
+});
+
+//add track(s) to an extant queue
+//need:
+// - track id(s)
+// - user id
+// - queue id
+router.post("/addToQueue", async (req, res) => {
+  let {
+    userId,
+    queueId,
+    trackArr,
+  }: { userId: number; queueId: number; trackArr: string[] } = req.body;
+
+  //search track ids w/ spotify to get data (name, artists, etc)
+  let tracks;
+  let trackDetails;
+  if (trackArr.length > 1) {
+    tracks = await api.getTracks(trackArr);
+    trackDetails = tracks.body.tracks.map((track) => ({
+      id: track.id,
+      uri: track.uri,
+      href: track.href,
+      artists: track.artists,
+      albumCover: track.album.images[0], //widest, perhaps get last index for smallest?
+    }));
+  } else {
+    tracks = await api.getTrack(trackArr[0]);
+    trackDetails = {
+      id: tracks.body.id,
+      uri: tracks.body.uri,
+      href: tracks.body.href,
+      artists: tracks.body.artists,
+      albumCover: tracks.body.album.images[0], //widest, perhaps get last index for smallest?
+    };
+  }
+
+  console.log("tracks filtered from spotify api response");
+  console.log(trackDetails);
+
+  //then, add them to the user/queue's content field
+});
+
+//list a user's incoming queues
+//need:
+// - user id
+// - ?
+router.post("/listIncomingQueues", async (req, res) => {
+  try {
+    let { userId } = req.body;
+
+    let queues = await db.queue.findMany({
+      where: {
+        sentTo: userId,
+      },
+    });
+
+    res.send({ success: true, queues: queues });
+  } catch (err) {
+    console.error(err + " in createQueue");
+    return res
+      .status(500)
+      .send({ success: false, msg: "error fetching incoming queues" });
+  }
+});
+
+//list a user's outgoing queues
+//need:
+// - user id
+// - ?
+router.post("/listOutgoingQueues", async (req, res) => {
+  try {
+    let { userId } = req.body;
+
+    let queues = await db.queue.findMany({
+      where: {
+        sentBy: userId,
+      },
+    });
+
+    res.send({ success: true, queues: queues });
+  } catch (err) {
+    console.error(err + " in createQueue");
+    return res
+      .status(500)
+      .send({ success: false, msg: "error fetching outgoing queues" });
+  }
+});
+
+//export an incoming queue (allow for outgoing too?)
+//need:
+// - user id
+// - queue id
+router.get("/exportQueue", async (req, res) => {
+  let { userId, queueId } = req.body;
+  //get queue details (title, desc, content) from db
+  let queueDetails = await db.queue.findUnique({
+    where: {
+      id: queueId,
+    },
+    select: {
+      content: true,
+      title: true,
+      description: true,
+    },
+  });
+
+  let trackIds = queueDetails?.content.map((song) => ({
+    id: song.id,
+  }));
+
+  //export it to spotify.
+  // - check if it exists already - if so, add tracks that aren't in it alr
+  let playlists = await api.getUserPlaylists();
+  let alreadyExists = playlists.body.items.filter(
+    (plist) => plist.name == queueDetails?.title
+  );
+  if (alreadyExists) {
+    //...
+  } else {
+    let data = api
+      .createPlaylist(queueDetails?.title as string, {
+        description: queueDetails?.description,
+      })
+      .then(async (createdPlaylist) => {
+        await api.addTracksToPlaylist(
+          createdPlaylist.body.id,
+          trackIds as string[]
+        );
+      });
+  }
+  // - if not... add whole thing
+});
+
 export default router;
