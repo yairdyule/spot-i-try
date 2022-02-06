@@ -22,9 +22,10 @@ model Queue {
   id          Int      @id @default(autoincrement())
   title       String   @db.VarChar(255)
   content     Song[]
-  sentTo      User     @relation("incomingQueues", fields: [recipientId], references: id)
+  description String   @default("Created, with love, by Vynilla <3") @db.VarChar(255)
+  sentTo      User?    @relation("incomingQueues", fields: [recipientId], references: id)
   sentBy      User     @relation("sentQueues", fields: [authorId], references: [id])
-  recipientId Int
+  recipientId Int?
   authorId    Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
