@@ -4,6 +4,28 @@ import { PrismaClient } from "@prisma/client";
 const userRouter = Router();
 const db = new PrismaClient();
 
+userRouter.get("/", async (req, res) => {
+  console.log("get users");
+  try {
+    let { friendName = "" } = req.query;
+    let users = await db.user.findMany({
+      where: {
+        name: {
+          startsWith: friendName as string,
+        },
+      },
+      select: {
+        name: true,
+        id: true,
+      },
+    });
+    res.send({ users: users });
+  } catch (err) {
+    console.error(err + " in /");
+    res.status(500).send({ success: false, msg: "sorrrryy!!!!" });
+  }
+});
+
 //return all queues
 userRouter.get("/queues", async (req, res) => {
   const allQueues = await db.queue.findMany({});
@@ -208,6 +230,14 @@ userRouter.get("/getFriends", async (req, res) => {
   }
 });
 
-userRouter.post("/sendFriendRequest", async (req, res) => {});
+userRouter.post("/sendFriendRequest", async (req, res) => {
+  console.log("got frq");
+
+  let { to, from } = req.body;
+
+  //get user w/ id 'from'
+  //add "from" to "to"'s friendRequests
+  //add "to" to "from"'s friends
+});
 
 export default userRouter;
