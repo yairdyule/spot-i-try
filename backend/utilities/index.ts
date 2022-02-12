@@ -1,5 +1,5 @@
 import { Router } from "express";
 
-export const RouteBuilder = (r: string, rr: Router) => {
-  return { route: r, router: rr };
+export const RouteBuilder = (path: string, rr: Router) => {
+  return { route: path, router: rr };
 };
