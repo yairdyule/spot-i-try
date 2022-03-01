@@ -1,36 +1,24 @@
-import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
 import Main from "../components/Main";
 import { UserContext } from "../hooks/UserContext";
+import { trpc } from "../utilities/trpc";
 
 enum Classnames {
   h1 = "text-lg font-medium",
   Link = "text-emerald-300 font-semibold",
 }
 
-type Queue = {
-  title: string;
-  id: string;
-  published: boolean;
-};
-
 export default function Home() {
-  const [queues, setQueues] = useState([] as Queue[]);
+  const hello = trpc.useQuery(["hello"]);
 
   const User = useContext(UserContext);
 
-  useEffect(() => {
-    axios.get("http://localhost:8000/user/queues").then(({ data }) => {
-      setQueues(data.queues);
-    });
-    return () => {
-      setQueues([]);
-    };
-  }, []);
+  if (!hello.data) return <div>loading...</div>;
 
   return (
     <Main>
+      {hello.data?.msg}
       {User?.user?.loggedIn ? (
         <>
           <h1 className={Classnames.h1}>

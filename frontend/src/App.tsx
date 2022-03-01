@@ -1,19 +1,27 @@
 import { Outlet } from "react-router-dom";
-import Navlink from "./components/Navlink";
-import { AiOutlineLock, AiOutlineHome, AiOutlineSearch } from "react-icons/ai";
-import { MdPersonOutline } from "react-icons/md";
+import Navbar from "./components/Navbar";
+
+import { useState } from "react";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { trpc } from "./utilities/trpc";
 
 function App() {
+  const [queryClient] = useState(() => new QueryClient());
+  const [trpcClient] = useState(() =>
+    trpc.createClient({
+      url: "http://localhost:8000/trpc",
+    })
+  );
+
   return (
-    <div className="App">
-      <nav className="flex flex-row gap-4 justify-center py-4 border-b-2 border-emerald-300 text-xl bg-slate-emerald-800">
-        <Navlink path="/authorize" Child={AiOutlineLock} />
-        <Navlink path="/" Child={AiOutlineHome} />
-        <Navlink path="/search" Child={AiOutlineSearch} />
-        <Navlink path="/profile" Child={MdPersonOutline} />
-      </nav>
-      <Outlet />
-    </div>
+    <trpc.Provider client={trpcClient} queryClient={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <div className="App">
+          <Navbar />
+          <Outlet />
+        </div>
+      </QueryClientProvider>
+    </trpc.Provider>
   );
 }
 
