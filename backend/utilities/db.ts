@@ -1,24 +1,34 @@
 import { PrismaClient } from "@prisma/client";
 const db = new PrismaClient();
 
-type User = {
-  name: string;
+export async function findUser({
+  email,
+  name,
+  password,
+}: {
   email: string;
+  name: string;
   password: string;
-} | null;
-
-export async function findUser(details: User) {
+}) {
   let data = await db.user.findFirst({
     where: {
-      email: details?.email,
-      password: details?.password,
+      email: email,
+      password: password,
     },
   });
   return data;
 }
 
-export async function createUser(details: User) {
-  if ((await findUser(details)) !== null) {
+export async function createUser({
+  email,
+  name,
+  password,
+}: {
+  email: string;
+  name: string;
+  password: string;
+}) {
+  if ((await findUser({ email, name, password })) !== null) {
     console.log("user already exists");
 
     return null;

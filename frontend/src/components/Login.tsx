@@ -1,31 +1,14 @@
 import { useState, useContext } from "react";
 import axios from "axios";
-import * as React from "react";
-import * as ReactDOM from "react-dom";
 
 import Main from "./Main";
 import Alert from "./Alert";
 import { UserContext } from "../hooks/UserContext";
 import { UserContextProvider } from "../hooks/UserContextProvider";
 
-type User = {
-  name: string;
-  id: number;
-  loggedIn: boolean;
-  authorizedWithSpotify: boolean; //todo - consolidate types
-};
-
-type Data = {
-  user: User;
-  success: boolean;
-};
-
-type ApiResult = {
-  /**
-   * The data returned from the request
-   */
-  data: Data;
-};
+import type { User, Data, ApiResult } from "../../types";
+import { trpc } from "../utilities/trpc";
+import { useQuery } from "react-query";
 
 //omfg how did i just discover docstrings
 
@@ -48,6 +31,8 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [data, setData] = useState<Data | null>(null);
   const User = useContext(UserContext);
+  const user = trpc.useQuery(["login", { email: email, password: password }]);
+  console.log(user);
 
   const login = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

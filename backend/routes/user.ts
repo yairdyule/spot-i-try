@@ -1,8 +1,10 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
-
 const userRouter = Router();
 const db = new PrismaClient();
+
+//logging util
+const out = (s: any) => console.log(s);
 
 userRouter.post("/login", async (req, res) => {
   try {
@@ -13,9 +15,14 @@ userRouter.post("/login", async (req, res) => {
         email: email,
       },
     });
-    console.log(result);
 
     if (result?.password == password) {
+      req.session.user;
+      await req.session.save();
+
+      out("session:");
+      out(req.session);
+
       res.status(200).send({
         success: true,
         user: { id: result?.id, name: result?.name },
@@ -42,7 +49,7 @@ userRouter.post("/signup", async (req, res) => {
     });
 
     if (result !== null) {
-      console.log("dupe registration");
+      out("duplicate registration");
       return res.send({
         success: false,
         msg: "someone already exists with that username",
@@ -56,6 +63,10 @@ userRouter.post("/signup", async (req, res) => {
         password: password,
       },
     });
+
+    req.session.user = result;
+    await req.session.save();
+
     res.status(200).send({
       success: true,
       user: { id: result?.id, name: result?.name },
@@ -70,6 +81,8 @@ userRouter.post("/signup", async (req, res) => {
 userRouter.post("/details", async (req, res) => {
   try {
     const id = req.body.id;
+
+    out(req.session);
 
     var result = await db.user.findFirst({
       where: {
@@ -99,14 +112,10 @@ userRouter.post("/details", async (req, res) => {
       },
     });
 
-    // console.log(`'user's queues: ${console.table(queues)}`);
-
     //want to get a user's...
     //  queues
     //  friends
     //  profile (bio, etc)
-
-    console.log(result);
 
     if (result === null) {
       return res.send({

@@ -10,7 +10,7 @@ enum Classnames {
 }
 
 export default function Home() {
-  const hello = trpc.useQuery(["hello"]);
+  const hello = trpc.useQuery(["hello", null]);
 
   const User = useContext(UserContext);
 
