@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { User, ApiResult, Data } from "../../types";
+import { Data } from "../types";
 
 /**
  * fetch user with given password & email

@@ -6,7 +6,7 @@ import Alert from "./Alert";
 import { UserContext } from "../hooks/UserContext";
 import { UserContextProvider } from "../hooks/UserContextProvider";
 
-import type { User, Data, ApiResult } from "../../types";
+import type { User, Data, ApiResult } from "../types";
 import { trpc } from "../utilities/trpc";
 import { useQuery } from "react-query";
 
