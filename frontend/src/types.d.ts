@@ -16,6 +16,7 @@ export type ApiResult = {
  * the data comprising an ApiResponse
  */
 export type Data = {
+  message: string;
   user: User;
   success: boolean;
 };
