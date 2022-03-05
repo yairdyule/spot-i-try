@@ -6,7 +6,7 @@ type User = {
   loggedIn: boolean;
   authorizedWithSpotify: boolean;
 };
-interface IUserContext {
+export interface IUserContext {
   user: User | null;
   setUser: (user: User) => void;
 }
