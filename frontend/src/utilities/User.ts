@@ -1,5 +1,5 @@
-import axios from "axios";
-import { Data } from "../types";
+import ax from "./axios";
+import { ApiResult, Data } from "../types";
 
 /**
  * fetch user with given password & email
@@ -9,13 +9,9 @@ export async function fetchUser(
   email: String,
   password: String
 ): Promise<Data | null> {
-  let { data }: { data: Data } = await axios.post(
-    "http://localhost:8000/user/login",
-    {
-      email: email,
-      password: password,
-    }
-  );
-
+  let { data } = await ax.post("/user/login", {
+    email: email,
+    password: password,
+  });
   return data;
 }
