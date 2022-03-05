@@ -7,7 +7,7 @@ import Home from "./routes/home";
 import Authorize from "./routes/authorize";
 import Search from "./routes/search";
 import Profile from "./routes/profile";
-import Login from "./components/Login";
+import Login from "./components/Login/Login";
 import Signup from "./components/Signup";
 import { UserContextProvider } from "./hooks/UserContextProvider";
 
