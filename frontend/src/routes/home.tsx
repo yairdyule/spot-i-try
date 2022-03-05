@@ -1,8 +1,7 @@
+import Main from "../components/Main";
 import { useContext } from "react";
 import { Link } from "react-router-dom";
-import Main from "../components/Main";
 import { UserContext } from "../hooks/UserContext";
-import { trpc } from "../utilities/trpc";
 
 enum Classnames {
   h1 = "text-lg font-medium",
@@ -10,15 +9,10 @@ enum Classnames {
 }
 
 export default function Home() {
-  const hello = trpc.useQuery(["hello", null]);
-
   const User = useContext(UserContext);
-
-  if (!hello.data) return <div>loading...</div>;
 
   return (
     <Main>
-      {hello.data?.msg}
       {User?.user?.loggedIn ? (
         <>
           <h1 className={Classnames.h1}>
