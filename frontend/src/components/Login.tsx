@@ -7,7 +7,6 @@ import { UserContext } from "../hooks/UserContext";
 import { UserContextProvider } from "../hooks/UserContextProvider";
 
 import type { User, Data, ApiResult } from "../types";
-import { trpc } from "../utilities/trpc";
 import { useQuery } from "react-query";
 
 //omfg how did i just discover docstrings
@@ -31,8 +30,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [data, setData] = useState<Data | null>(null);
   const User = useContext(UserContext);
-  const user = trpc.useQuery(["login", { email: email, password: password }]);
-  console.log(user);
 
   const login = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
