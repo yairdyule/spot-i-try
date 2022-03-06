@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { fetchUser } from "../../utilities/User";
+import { useLoginDispatch, useAppDispatch } from "../../store/user/userHooks";
+import { login, logout } from "../../store/user/userStore";
 
 enum classNames {
   input = "bg-black px-1 rounded-md border-2 border-emerald-200",
@@ -11,22 +13,22 @@ interface FormInputProps {
   setData: React.Dispatch<any>;
 }
 
-export default function Form({ setData }: FormInputProps) {
+export const LoginForm = ({ setData }: FormInputProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useAppDispatch();
 
-  const login = async (e: React.FormEvent<HTMLFormElement>) => {
+  const useLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let data = await fetchUser(email, password);
-    if (data?.success) {
-      setData(data);
-    }
+    setData(data);
+    dispatch(login(data?.user ? data.user : {}));
   };
 
   return (
     <>
       <h1>login</h1>
-      <form className={classNames.form} onSubmit={(e) => login(e)}>
+      <form className={classNames.form} onSubmit={useLogin}>
         <input
           type="email"
           placeholder="email"
@@ -47,4 +49,6 @@ export default function Form({ setData }: FormInputProps) {
       </form>
     </>
   );
-}
+};
+
+export default LoginForm;

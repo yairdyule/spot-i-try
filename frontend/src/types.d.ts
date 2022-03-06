@@ -1,8 +1,8 @@
 export type User = {
-  name: string;
-  id: number;
-  loggedIn: boolean;
-  authorizedWithSpotify: boolean; //todo - consolidate types
+  name?: string;
+  id?: number;
+  loggedIn?: boolean;
+  authorizedWithSpotify?: boolean; //todo - consolidate types
 };
 
 /**
