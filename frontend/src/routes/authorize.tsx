@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import Main from "../components/Main";
+import { Main } from "../components/Layout";
 import { UserContext } from "../hooks/UserContext";
 
 enum Classnames {

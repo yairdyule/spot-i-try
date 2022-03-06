@@ -1,5 +1,5 @@
 import Alert from "./Alert";
-import Main from "./Main";
+import { Main } from "./Layout";
 import axios from "axios";
 import { useContext, useState } from "react";
 import { UserContext } from "../hooks/UserContext";
@@ -21,7 +21,7 @@ export default function Signup() {
   const [data, setData] = useState<ApiResponse | null>(null);
   const User = useContext(UserContext);
 
-  const login = async (e: React.FormEvent<HTMLFormElement>) => {
+  const signup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     axios
       .post("http://localhost:8000/user/signup", {
@@ -30,13 +30,7 @@ export default function Signup() {
         password: password,
       })
       .then(({ data }) => {
-        // console.log(data);
         if (data.success) {
-          // User?.setUser({
-          //   id: data.data.user.id,
-          //   name: data.data.user.name,
-          //   loggedIn: true,
-          // });
           let oldUser = User?.user;
           let newUser = {
             id: data.user.id,
@@ -54,7 +48,7 @@ export default function Signup() {
     <Main>
       {data && <Alert success={data.success} action="signed up" />}
       <h1>Sign up!</h1>
-      <form className={Classnames.form} onSubmit={(e) => login(e)}>
+      <form className={Classnames.form} onSubmit={(e) => signup(e)}>
         <input
           type="email"
           placeholder="email"
