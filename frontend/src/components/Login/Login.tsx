@@ -1,22 +1,26 @@
 import { useState, useContext } from "react";
-import Main from "../Main";
+import { Main } from "../Layout";
+import { Data, User } from "../../types";
 import Alert from "../Alert";
-import { UserContext } from "../../hooks/UserContext";
 import Form from "./loginForm";
-import { Data } from "../../types";
+import { useAppSelector } from "../../store/user/userHooks";
 
 export default function Login() {
   const [data, setData] = useState<Data | null>(null);
-  const User = useContext(UserContext);
+  const User: User = useAppSelector((state) => state.User);
+
+  if (!User.loggedIn) {
+    return (
+      <Main>
+        <Form setData={setData} />
+      </Main>
+    );
+  }
 
   return (
     <Main>
       {data && <Alert success={data.success} action="logged in" />}
-      {User?.user?.loggedIn ? (
-        <h2>Omg hi {User.user.name} </h2>
-      ) : (
-        <Form setData={setData} />
-      )}
+      {User.loggedIn && <h2>Omg hi {User.name} </h2>}
     </Main>
   );
 }
