@@ -6,10 +6,6 @@ import { QueryClient, QueryClientProvider } from "react-query";
 
 function App() {
   const [queryClient] = useState(() => new QueryClient());
-<<<<<<< HEAD
-
-=======
->>>>>>> main
   return (
     <QueryClientProvider client={queryClient}>
       <div className="App">
