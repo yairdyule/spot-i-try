@@ -19,10 +19,6 @@ userRouter.post("/login", async (req, res) => {
     if (result?.password == password) {
       req.session.user;
       await req.session.save();
-
-      out("session:");
-      out(req.session);
-
       res.status(200).send({
         success: true,
         user: { id: result?.id, name: result?.name },

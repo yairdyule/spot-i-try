@@ -1,6 +1,6 @@
+import Main from "../components/Main";
 import { useContext } from "react";
 import { Link } from "react-router-dom";
-import Main from "../components/Main";
 import { UserContext } from "../hooks/UserContext";
 
 enum Classnames {

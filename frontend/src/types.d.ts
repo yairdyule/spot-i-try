@@ -1,8 +1,8 @@
 export type User = {
-  name: string;
-  id: number;
-  loggedIn: boolean;
-  authorizedWithSpotify: boolean; //todo - consolidate types
+  name?: string;
+  id?: number;
+  loggedIn?: boolean;
+  authorizedWithSpotify?: boolean; //todo - consolidate types
 };
 
 /**
@@ -16,6 +16,7 @@ export type ApiResult = {
  * the data comprising an ApiResponse
  */
 export type Data = {
+  message: string;
   user: User;
   success: boolean;
 };
