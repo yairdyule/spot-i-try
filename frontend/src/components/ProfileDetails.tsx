@@ -1,21 +1,22 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../hooks/UserContext";
 import { FaPlusCircle } from "react-icons/fa";
 import { FiGithub } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import { useUserSelector } from "../store/user/userHooks";
 
 type Props = {
   id: number;
 };
 
-type ProfileDetails = {
+interface IProfileDetails {
   friends: [{ name: string }];
   incomingQueues: [{ title: string }];
   sentQueues: [{ title: string }];
   profile: {
     bio: string;
   };
-} | null;
+}
 
 enum Classnames {
   col = "flex flex-col  items-center justify-start",
@@ -24,8 +25,9 @@ enum Classnames {
 }
 
 export default function ProfileDetails({ id }: Props) {
-  const [details, setDetails] = useState(null as ProfileDetails);
-  const User = useContext(UserContext);
+  const [details, setDetails] = useState<null | IProfileDetails>(null);
+  const User = useUserSelector();
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -37,7 +39,11 @@ export default function ProfileDetails({ id }: Props) {
     return () => {
       setDetails(null);
     };
-  }, []);
+  }, [id]);
+
+  if (!User.loggedIn) {
+    navigate("/login");
+  }
 
   return (
     <>
@@ -47,7 +53,7 @@ export default function ProfileDetails({ id }: Props) {
             <FiGithub className="text-white bg-emerald-300 w-20 h-20 p-2 rounded-full" />
             <div className="flex flex-col gap-1">
               <h1 className="text-2xl font-semibold text-emerald-300">
-                {User?.user?.name}
+                {User?.name}
               </h1>
               <div className="flex flex-row gap-3">
                 <p>

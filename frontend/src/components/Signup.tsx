@@ -1,8 +1,9 @@
 import Alert from "./Alert";
 import { Main } from "./Layout";
 import axios from "axios";
-import { useContext, useState } from "react";
-import { UserContext } from "../hooks/UserContext";
+import { useState } from "react";
+// import { UserContext } from "../hooks/UserContext";
+import { useUserSelector, useAppDispatch } from "../store/user/userHooks";
 
 interface ApiResponse {
   success: boolean;
@@ -19,7 +20,8 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [data, setData] = useState<ApiResponse | null>(null);
-  const User = useContext(UserContext);
+  const User = useUserSelector();
+  const dispatch = useAppDispatch();
 
   const signup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,14 +33,15 @@ export default function Signup() {
       })
       .then(({ data }) => {
         if (data.success) {
-          let oldUser = User?.user;
-          let newUser = {
-            id: data.user.id,
-            name: data.user.name,
-            loggedIn: true,
-            authorizedWithSpotify: !!oldUser?.authorizedWithSpotify,
-          };
-          User?.setUser(newUser);
+          // dispatch(register())
+          // let oldUser = User?.user;
+          // let newUser = {
+          //   id: data.user.id,
+          //   name: data.user.name,
+          //   loggedIn: true,
+          //   authorizedWithSpotify: !!oldUser?.authorizedWithSpotify,
+          // };
+          // User?.setUser(newUser);
         }
         setData(data);
       });

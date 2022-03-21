@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { fetchUser } from "../../utilities/User";
+// import { fetchUser } from "../../utilities/User";
 import { useAppDispatch } from "../../store/user/userHooks";
-import { login } from "../../store/user/userStore";
+import { login } from "../../store/store";
 
 enum classNames {
   input = "bg-black px-1 rounded-md border-2 border-emerald-200",
@@ -19,14 +19,15 @@ export const LoginForm = ({ setData }: FormInputProps) => {
   const dispatch = useAppDispatch();
 
   const useLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    let data = await fetchUser(email, password);
-    setData(data);
-    if (data?.success && data.user) {
-      dispatch(
-        login({ name: data.user.name, id: data.user.id, loggedIn: true })
-      );
-    }
+    dispatch(login({}))
+    // e.preventDefault();
+    // let data = await fetchUser(email, password);
+    // setData(data);
+    // if (data?.success && data.user) {
+    //   dispatch(
+    //     login({ name: data.user.name, id: data.user.id, loggedIn: true })
+    //   );
+    // }
   };
 
   return (
