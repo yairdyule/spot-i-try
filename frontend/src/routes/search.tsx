@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-import SearchResults from "../components/SearchResults";
+import { SearchResults } from "../components/Search";
 import { FaSpinner } from "react-icons/fa";
 
 export default function Search() {

@@ -1,4 +1,4 @@
-import Navlink from "../components/Navlink";
+import Navlink from "./Navlink";
 import { AiOutlineLock, AiOutlineHome, AiOutlineSearch } from "react-icons/ai";
 import { MdPersonOutline } from "react-icons/md";
 

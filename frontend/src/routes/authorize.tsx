@@ -1,6 +1,4 @@
-import { useContext } from "react";
-import Main from "../components/Main";
-import { UserContext } from "../hooks/UserContext";
+import { Main } from "../components/Layout";
 
 enum Classnames {
   h2 = "text-lg pb-4",

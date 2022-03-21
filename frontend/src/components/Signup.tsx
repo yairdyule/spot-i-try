@@ -1,8 +1,9 @@
 import Alert from "./Alert";
-import Main from "./Main";
+import { Main } from "./Layout";
 import axios from "axios";
-import { useContext, useState } from "react";
-import { UserContext } from "../hooks/UserContext";
+import { useState } from "react";
+// import { UserContext } from "../hooks/UserContext";
+import { useUserSelector, useAppDispatch } from "../store/user/userHooks";
 
 interface ApiResponse {
   success: boolean;
@@ -19,9 +20,10 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [data, setData] = useState<ApiResponse | null>(null);
-  const User = useContext(UserContext);
+  const User = useUserSelector();
+  const dispatch = useAppDispatch();
 
-  const login = async (e: React.FormEvent<HTMLFormElement>) => {
+  const signup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     axios
       .post("http://localhost:8000/user/signup", {
@@ -30,21 +32,16 @@ export default function Signup() {
         password: password,
       })
       .then(({ data }) => {
-        // console.log(data);
         if (data.success) {
-          // User?.setUser({
-          //   id: data.data.user.id,
-          //   name: data.data.user.name,
+          // dispatch(register())
+          // let oldUser = User?.user;
+          // let newUser = {
+          //   id: data.user.id,
+          //   name: data.user.name,
           //   loggedIn: true,
-          // });
-          let oldUser = User?.user;
-          let newUser = {
-            id: data.user.id,
-            name: data.user.name,
-            loggedIn: true,
-            authorizedWithSpotify: !!oldUser?.authorizedWithSpotify,
-          };
-          User?.setUser(newUser);
+          //   authorizedWithSpotify: !!oldUser?.authorizedWithSpotify,
+          // };
+          // User?.setUser(newUser);
         }
         setData(data);
       });
@@ -54,7 +51,7 @@ export default function Signup() {
     <Main>
       {data && <Alert success={data.success} action="signed up" />}
       <h1>Sign up!</h1>
-      <form className={Classnames.form} onSubmit={(e) => login(e)}>
+      <form className={Classnames.form} onSubmit={(e) => signup(e)}>
         <input
           type="email"
           placeholder="email"

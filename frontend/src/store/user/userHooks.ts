@@ -1,13 +1,13 @@
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { User } from "../../types";
-import { AppDispatch, login, logout, RootState } from "./userStore";
+import { AppDispatch, login, logout, RootState } from "../store";
 
 /**
  * selectors
  */
 
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
-export const useUserSelector = () => useAppSelector((state) => state.User);
+export const useUserSelector = (): User => useAppSelector((state) => state.User);
 
 /**
  * dispatches
