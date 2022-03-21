@@ -1,6 +1,5 @@
 import express, { Router } from "express";
 import { Application } from "express";
-import { TrpcWare } from "./middlewares/wares/trpc";
 
 interface Controller {
   route: string;
@@ -31,8 +30,6 @@ class App {
     middlewares.forEach((ware) => {
       this.app.use(ware);
     });
-
-    this.app.use("/trpc", TrpcWare);
   }
 
   private routes(controllers: Controller[]): void {

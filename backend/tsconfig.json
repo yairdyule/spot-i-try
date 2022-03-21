@@ -7,6 +7,6 @@
     "strict": true,
     "strictPropertyInitialization": true,
     "skipLibCheck": true,
-    "outDir": "./src"
+    "outDir": "./build"
   }
 }
